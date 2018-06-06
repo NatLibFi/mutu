@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="mutu">
+    <property environment="env"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
+    <path id="mutu.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="lib/jena-core-3.7.0.jar"/>
+        <pathelement location="lib/commons-cli-1.4.jar"/>
+        <pathelement location="lib/slf4j-log4j12-1.7.25.jar"/>
+        <pathelement location="lib/slf4j-api-1.7.25.jar"/>
+        <pathelement location="lib/log4j-1.2.17.jar"/>
+        <pathelement location="lib/xercesImpl-2.11.0.jar"/>
+        <pathelement location="lib/jena-base-3.7.0.jar"/>
+        <pathelement location="lib/jena-arq-3.7.0.jar"/>
+        <pathelement location="lib/jena-cmds-3.7.0.jar"/>
+        <pathelement location="lib/jena-iri-3.7.0.jar"/>
+        <pathelement location="lib/jena-rdfconnection-3.7.0.jar"/>
+        <pathelement location="lib/jena-tdb-3.7.0.jar"/>
+        <pathelement location="lib/jena-shaded-guava-3.7.0.jar"/>
+        <pathelement location="lib/xml-apis-1.4.01.jar"/>
+        <pathelement location="lib/libthrift-0.10.0.jar"/>
+        <pathelement location="lib/httpclient-4.5.3.jar"/>
+        <pathelement location="lib/httpclient-cache-4.5.3.jar"/>
+        <pathelement location="lib/httpcore-4.4.6.jar"/>
+        <pathelement location="lib/jcl-over-slf4j-1.7.25.jar"/>
+        <pathelement location="lib/commons-lang3-3.4.jar"/>
+        <pathelement location="lib/collection-0.7.jar"/>
+        <pathelement location="lib/commons-codec-1.11.jar"/>
+        <pathelement location="lib/commons-csv-1.5.jar"/>
+        <pathelement location="lib/commons-io-2.6.jar"/>
+        <pathelement location="lib/jackson-annotations-2.9.0.jar"/>
+        <pathelement location="lib/jackson-core-2.9.0.jar"/>
+        <pathelement location="lib/jackson-databind-2.9.0.jar"/>
+        <pathelement location="lib/jena-dboe-base-3.7.0.jar"/>
+        <pathelement location="lib/jena-dboe-index-3.7.0.jar"/>
+        <pathelement location="lib/jena-dboe-trans-data-3.7.0.jar"/>
+        <pathelement location="lib/jena-dboe-transaction-3.7.0.jar"/>
+        <pathelement location="lib/jena-tdb2-3.7.0.jar"/>
+        <pathelement location="lib/jsonld-java-0.11.1.jar"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project,run-test,create_jar" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="mutu.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target name="Mutu list">
+        <java classname="fi.nationallibrary.mutu.Mutu" failonerror="true" fork="yes">
+            <arg line="-list"/>
+            <classpath refid="mutu.classpath"/>
+        </java>
+    </target>
+    <target name="Mutu query 5">
+        <java classname="fi.nationallibrary.mutu.Mutu" failonerror="true" fork="yes">
+            <arg line="-query 5 -specOnt data/maotao.ttl data\yso-maotao.ttl -newYso data\ysoKehitys-2018-3-Boethius.rdf"/>
+            <classpath refid="mutu.classpath"/>
+        </java>
+    </target>
+    <target name="Mutu">
+        <java classname="fi.nationallibrary.mutu.Mutu" failonerror="true" fork="yes">
+            <arg line="-specOnt data/maotao.ttl data\yso-maotao.ttl -newYso data\ysoKehitys-2018-3-Boethius.rdf"/>
+            <classpath refid="mutu.classpath"/>
+        </java>
+    </target>
+    <target name="run-test" description="Runs internal Mutu unit test.">
+        <java classname="fi.nationallibrary.mutu.Mutu" failonerror="true" fork="yes" resultproperty="run-test.result">
+            <arg line="-test"/>
+            <classpath refid="mutu.classpath"/>
+        </java>
+        <fail message="ERROR: test run fails">
+            <condition>
+                <not>
+                    <equals arg1="${run-test.result}" arg2="0"/>
+                </not>
+            </condition>
+        </fail>
+    </target>
+	
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <!--define folder properties-->
+    <property name="dir.buildfile" value="."/>
+    <property name="dir.jarfile" value="${dir.buildfile}"/>
+    <target name="create_jar">
+        <jar destfile="${dir.jarfile}/mutu.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="fi.nationallibrary.mutu.Mutu"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="${dir.jarfile}/bin"/>
+            <fileset dir="${dir.jarfile}" includes="resources\, mutu-config.xml"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-core-3.7.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-cli-1.4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/slf4j-log4j12-1.7.25.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/slf4j-api-1.7.25.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/log4j-1.2.17.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/xercesImpl-2.11.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-base-3.7.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-arq-3.7.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-cmds-3.7.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-iri-3.7.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-rdfconnection-3.7.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-tdb-3.7.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-shaded-guava-3.7.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/xml-apis-1.4.01.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/libthrift-0.10.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/httpclient-4.5.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/httpclient-cache-4.5.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/httpcore-4.4.6.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jcl-over-slf4j-1.7.25.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-lang3-3.4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/collection-0.7.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-codec-1.11.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-csv-1.5.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-io-2.6.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jackson-annotations-2.9.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jackson-core-2.9.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jackson-databind-2.9.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-dboe-base-3.7.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-dboe-index-3.7.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-dboe-trans-data-3.7.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-dboe-transaction-3.7.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-tdb2-3.7.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jsonld-java-0.11.1.jar"/>
+        </jar>
+    </target>
+</project>

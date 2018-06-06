@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Mutu configuration file -->
+<mutu-config>
+<!-- Common prefix map simplifies SPARQL queries so that the same prefixes need not to be repeated in every query -->
+<common-prefix-map>
+<![CDATA[
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX skosext: <http://purl.org/finnonto/schema/skosext#>
+PREFIX dc11: <http://purl.org/dc/elements/1.1/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX puhometa: <http://www.yso.fi/onto/puho-meta/>
+PREFIX maometa: <http://www.yso.fi/onto/mao-meta/>
+PREFIX ysometa: <http://www.yso.fi/onto/yso-meta/>
+PREFIX yso-meta: <http://www.yso.fi/onto/yso-meta/2007-03-02/>
+]]>
+</common-prefix-map>
+<!-- Substitutions are basic search and replace operations that can be used like macros to share certain configurations in multiple queries -->
+<substitutions>
+<task>
+<description>Selects the domain concepts (?domainC) by type, their rdfs:type's (?domainCtypes), and finnish prefLabel (?domainCpref)</description>
+<search>*domain-concept-selector-query*</search>
+<replace>
+<![CDATA[
+SELECT ?domainC (REPLACE(GROUP_CONCAT(?domainCtype ; separator=", "),'http://([^,]+?)/([^/]+?)-meta/','$2-meta:') AS ?domainCtypes) ?domainCpref
+WHERE {
+?domainC rdf:type ?domainCtype . 
+?domainCtype rdfs:subClassOf+ owl:Class .
+FILTER (!strstarts(str(?domainCtype),"http://www.yso.fi/onto/yso") &&
+              !strstarts(str(?domainCtype),"http://www.w3.org/2002/07/owl")) .
+?domainC skos:prefLabel ?domainCpref .
+FILTER (lang(?domainCpref) = 'fi')
+} GROUP BY ?domainC ?domainCpref
+]]>
+</replace>
+</task>
+<task>
+<description>Selects the YSO concepts (?domainC) by type, their rdfs:type's (?domainCtypes), and finnish prefLabel (?domainCpref)</description>
+<search>*yso-concept-selector-query*</search>
+<replace>
+<![CDATA[
+SELECT ?ysoC (REPLACE(REPLACE(GROUP_CONCAT(?ysoCtype ; separator=", "),'http://([^,]+?)/([^/]+?)-meta/','$2-meta:'),'2007-03-02/','') AS ?ysoCtypes) ?ysoCpref
+WHERE {
+?ysoC rdf:type ?ysoCtype . 
+?ysoCtype rdfs:subClassOf+ owl:Class .
+FILTER (strstarts(str(?ysoCtype),"http://www.yso.fi/onto/yso")) .
+?ysoC skos:prefLabel ?ysoCpref .
+FILTER (lang(?ysoCpref) = 'fi')
+} GROUP BY ?ysoC ?ysoCpref
+]]>
+</replace>
+</task>
+</substitutions>
+<!-- Queries are the heart of Mutu. All queries search for different types of changes, but report the changes in a common format.
+?queryType ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription
+Every query must contain one description an one query. Developer remarks can be included with remk-elements or #-syntax in SPARQL.
+-->
+<query>
+<description>Finds new YSO concepts that have same prefLabel with a domain ontology concept </description>
+<sparql><![CDATA[
+# 1-same-pref.rq
+#prefLabel same
+SELECT DISTINCT ('1.1' AS ?queryType) ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
+WHERE {
+  GRAPH ?anyNamedGraph {
+    {*yso-concept-selector-query*} .
+    FILTER NOT EXISTS {?ysoC owl:deprecated true .} . 
+    FILTER NOT EXISTS {?ysoC rdf:type ysometa:Hierarchy .} 
+  }
+  # Include only YSO Concepts that exists in the old YSO
+  FILTER NOT EXISTS { ?ysoC rdf:type ?anyTypeX } .
+  ?domainC skos:prefLabel ?ysoCpref .
+  {*domain-concept-selector-query*}.
+  BIND( "" AS ?interface)
+  BIND(concat("New YSO concept '",?ysoCpref, "' with the same prefLabel as in domain ontology") AS ?changeDescription)
+} ORDER BY ?domainC
+]]></sparql>
+</query>
+
+<query>
+<description>Finds domain concepts which have the same prefLabel as the new prefLabel of an existing YSO-concept, and there is no equivalence</description>
+<note>To reduce duplicate results, this query returns only domain ontology concepts which are directly connected to YSO. Remember to check their the sub concepts!!.</note>
+<sparql><![CDATA[
+# 2-diff-broad-pref.rq
+SELECT DISTINCT ('2.1' AS ?queryType) ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
+WHERE {
+   
+  GRAPH ?anyNamedGraph {
+    ?ysoC skos:prefLabel ?ysoCnewPref .
+    FILTER(lang(?ysoCnewPref) = 'fi') .
+    #FILTER NOT EXISTS {?ysoC skos:prefLabel ?ysoCpref} .
+    FILTER NOT EXISTS {{?ysoC owl:deprecated true} UNION {?ysoC rdf:type ysometa:Hierarchy}} . 
+  }
+  {*yso-concept-selector-query*}
+  FILTER(?ysoCnewPref != ?ysoCpref) .
+  FILTER NOT EXISTS { GRAPH ?yso {?ysoC owl:deprecated true } } . 
+
+  ?domainC skos:prefLabel ?ysoCnewPref
+  {*domain-concept-selector-query*}
+  FILTER NOT EXISTS { ?domainC owl:equivalentClass ?ysoC } . 
+  BIND( "" AS ?interface)
+  BIND(concat("New prefLabel of '",?ysoCpref, "' -> '",?ysoCnewPref,"' is the same with domain ontology concept and they are not equivalent") AS ?changeDescription) .
+  
+} ORDER BY ?domainC
+]]></sparql>
+</query>
+
+<query>
+<description>Finds domain concepts for which the prefLabel of equivalent or superordinate* YSO concept has changed</description>
+<note>To reduce duplicate results, this query returns only domain ontology concepts which are directly connected to YSO. Remember to check their the sub concepts!!.</note>
+<sparql><![CDATA[
+# 2-diff-broad-pref.rq
+SELECT DISTINCT ('2.2' AS ?queryType) ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
+WHERE {
+  {*domain-concept-selector-query*}
+  ?domainC rdfs:subClassOf|owl:equivalentClass|owl:equivalentClass/rdfs:subClassOf ?ysoCinterface .
+  ?ysoCinterface rdf:type ?ysoCinterfaceType .
+  {?ysoCinterfaceType rdfs:subClassOf+ owl:Class .
+  FILTER (strstarts(str(?ysoCinterfaceType),"http://www.yso.fi/onto/yso")) .}
+  ?ysoCinterface rdfs:subClassOf* ?ysoC .
+  
+  # do not report twice if concept is connected multiple ways, only direct change
+  FILTER NOT EXISTS {?domainC rdfs:subClassOf ?ysoC .
+	                 ?domainC owl:equivalentClass ?ysoCinterface .
+                     ?ysoCinterface rdfs:subClassOf ?ysoC}
+  
+  {*yso-concept-selector-query*} 
+  GRAPH ?anyNamedGraph {
+    ?ysoC skos:prefLabel ?ysoCnewPref .
+    FILTER(lang(?ysoCnewPref) = 'fi') .
+    #FILTER NOT EXISTS {?ysoC skos:prefLabel ?ysoCpref} .
+    FILTER NOT EXISTS {{?ysoC owl:deprecated true} UNION {?ysoC rdf:type ysometa:Hierarchy}} . 
+  }
+  FILTER(?ysoCnewPref != ?ysoCpref) .
+  FILTER NOT EXISTS { GRAPH ?yso {?ysoC owl:deprecated true } } . 
+
+  OPTIONAL {?domainC ?directRelation ?ysoC} .
+  BIND (IF(?ysoCinterface = ?ysoC, "true" ,"false") AS ?interface)
+  BIND (IF(?ysoCinterface != ?ysoC, 
+            "rdfs:subClassOf+" ,
+            IF(?directRelation = rdfs:subClassOf ,
+               "rdfs:subClassOf",
+               IF(?directRelation = owl:equivalentClass,
+                  "owl:equivalentClass",
+                  "owl:equivalentClass/rdfs:subClassOf" # Because ysoC is ysoCInterface, but ?directRelation is not rdfs:subClassOf or owl:equivalentClass
+                  )
+              )
+          ) 
+	   AS ?relationType).
+  BIND(concat("prefLabel of '",?ysoCpref, "' concept has changed to '",?ysoCnewPref,"'") AS ?changeDescription) .
+  
+} ORDER BY ?domainC
+]]></sparql>
+</query>
+
+<query>
+<description>Finds domain concepts for which indirect superordinate* concept of the direct superordinate/equivalent YSO concept has changed (new, removed or deprecated)</description>
+<note>remember to check the subClasses of the domain concept, which are not directly connected to YSO themselves </note>
+<sparql><![CDATA[
+#  	3-diff-broader.rq
+SELECT DISTINCT ?queryType ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
+WHERE{
+{
+SELECT DISTINCT ('3.1' AS ?queryType) ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
+WHERE {
+  {*domain-concept-selector-query*}
+  ?domainC rdfs:subClassOf|owl:equivalentClass ?ysoCinterface .
+  ?ysoCinterface rdf:type ?ysoCinterfaceType .
+  {?ysoCinterfaceType rdfs:subClassOf+ owl:Class .
+  FILTER (strstarts(str(?ysoCinterfaceType),"http://www.yso.fi/onto/yso")) .}
+  
+  GRAPH ?anyNamedGraph {
+    ?ysoCinterface rdfs:subClassOf* ?ysoC .
+    
+    ?ysoC rdfs:subClassOf ?ysoC2 .
+    ?ysoC2 skos:prefLabel ?ysoC2pref .
+    FILTER(lang(?ysoC2pref) = 'fi')
+  }
+  ?ysoCinterface rdfs:subClassOf* ?ysoC .
+  
+  # do not report twice if concept is connected multiple ways, only direct change
+  FILTER NOT EXISTS {?domainC rdfs:subClassOf ?ysoC .
+	                 ?domainC owl:equivalentClass ?ysoCinterface .
+                     ?ysoCinterface rdfs:subClassOf ?ysoC} 
+  
+  FILTER NOT EXISTS { ?ysoCinterface rdfs:subClassOf* ?ysoC .
+                      ?ysoC rdfs:subClassOf ?ysoC2 } 
+					  
+					  
+					  
+  {*yso-concept-selector-query*} .
+  
+  FILTER NOT EXISTS { GRAPH ?yso { {?ysoC owl:deprecated true . } UNION 
+                                   {?ysoC rdf:type  ysometa:DeprecatedConcept , ysometa:DeprecatedAggregateConcept . } UNION
+                                   {?ysoC2 owl:deprecated true} UNION
+                                   {?ysoC2 rdf:type  ysometa:DeprecatedConcept , ysometa:DeprecatedAggregateConcept . }
+                                   }}
+
+  OPTIONAL {?domainC ?directRelation ?ysoC} .
+  BIND (IF(?ysoCinterface = ?ysoC, "true" ,"false") AS ?interface)
+  BIND (IF(?ysoCinterface != ?ysoC, 
+            "rdfs:subClassOf+" ,
+            IF(?directRelation = rdfs:subClassOf ,
+               "rdfs:subClassOf",
+               IF(?directRelation = owl:equivalentClass,
+                  "owl:equivalentClass",
+                  "owl:equivalentClass/rdfs:subClassOf" # Because ysoC is ysoCInterface, but ?directRelation is not rdfs:subClassOf or owl:equivalentClass
+                  )
+              )
+          ) 
+	   AS ?relationType).
+  
+  BIND(concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") has a new superordinate concept  '",?ysoC2pref,"' (yso:",substr(str(?ysoC2),28) ,")") AS ?changeDescription)
+}
+  
+} UNION {
+
+{
+SELECT DISTINCT ('3.2' AS ?queryType) ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
+WHERE {
+  {*domain-concept-selector-query*}
+  
+  # ?ysoCinterface YSO Concept that is derectly connected to domain ontology (ie. equivalent or direct parent)
+  ?domainC rdfs:subClassOf|owl:equivalentClass ?ysoCinterface .
+  ?ysoCinterface rdf:type ?ysoCinterfaceType .
+  ?ysoCinterfaceType rdfs:subClassOf+ owl:Class .
+  FILTER (strstarts(str(?ysoCinterfaceType),"http://www.yso.fi/onto/yso")) .
+
+  {?ysoCinterface rdfs:subClassOf* ?ysoC .
+  ?ysoC rdfs:subClassOf ?ysoC2 .}
+  
+  # do not report twice if concept is connected multiple ways, only direct change
+  FILTER NOT EXISTS {?domainC rdfs:subClassOf ?ysoC .
+	                 ?domainC owl:equivalentClass ?ysoCinterface .
+                     ?ysoCinterface rdfs:subClassOf ?ysoC} 
+  
+  FILTER NOT EXISTS { GRAPH ?yso { ?ysoC rdfs:subClassOf ?ysoC2 } }
+  
+  {*yso-concept-selector-query*} 
+  
+  {?ysoC2 skos:prefLabel ?ysoC2pref .
+  FILTER(lang(?ysoC2pref) = 'fi')}
+  
+  FILTER NOT EXISTS { GRAPH ?yso { {?ysoC owl:deprecated true . } UNION 
+                                   {?ysoC rdf:type  ysometa:DeprecatedConcept , ysometa:DeprecatedAggregateConcept . } UNION
+                                   {?ysoC2 owl:deprecated true} UNION
+                                   {?ysoC2 rdf:type  ysometa:DeprecatedConcept , ysometa:DeprecatedAggregateConcept . }
+                                   }}
+  
+  OPTIONAL {?domainC ?directRelation ?ysoC} .
+  BIND (IF(?ysoCinterface = ?ysoC, "true" ,"false") AS ?interface)
+  BIND (IF(?ysoCinterface != ?ysoC, 
+            "rdfs:subClassOf+" ,
+            IF(?directRelation = rdfs:subClassOf ,
+               "rdfs:subClassOf",
+               IF(?directRelation = owl:equivalentClass,
+                  "owl:equivalentClass",
+                  "owl:equivalentClass/rdfs:subClassOf" # Because ysoC is ysoCInterface, but ?directRelation is not rdfs:subClassOf or owl:equivalentClass
+                  )
+              )
+          ) 
+	   AS ?relationType).
+  
+  BIND(concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") does not have superordinate concept  '",?ysoC2pref,"' (yso:",substr(str(?ysoC2),28) ,") in the newer YSO") AS ?changeDescription)
+  }
+}
+  
+}UNION {
+
+{
+SELECT DISTINCT ('3.3' AS ?queryType) ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
+WHERE {
+  {*domain-concept-selector-query*}
+  
+  # ?ysoCinterface YSO Concept that is derectly connected to domain ontology (ie. equivalent or direct parent)
+  ?domainC rdfs:subClassOf|owl:equivalentClass ?ysoCinterface .
+  ?ysoCinterface rdf:type ?ysoCinterfaceType .
+  ?ysoCinterfaceType rdfs:subClassOf+ owl:Class .
+  FILTER (strstarts(str(?ysoCinterfaceType),"http://www.yso.fi/onto/yso")) .
+
+  {?ysoCinterface rdfs:subClassOf* ?ysoC .
+  ?ysoC rdfs:subClassOf? ?ysoC2 .} .
+  
+  # do not report twice if concept is connected multiple ways, only direct change
+  FILTER NOT EXISTS {?domainC rdfs:subClassOf ?ysoC .
+	                 ?domainC owl:equivalentClass ?ysoCinterface .
+                     ?ysoCinterface rdfs:subClassOf ?ysoC} 
+  
+  GRAPH ?yso { {?ysoC2 rdf:type ysometa:DeprecatedConcept ,
+                                ysometa:DeprecatedAggregateConcept .
+                } UNION {
+				?ysoC2 owl:deprecated true} } .
+  
+  {*yso-concept-selector-query*} 
+  
+  {?ysoC2 skos:prefLabel ?ysoC2pref .
+  FILTER(lang(?ysoC2pref) = 'fi')}
+  
+  
+  OPTIONAL {?domainC ?directRelation ?ysoC} .
+  BIND (IF(?ysoCinterface = ?ysoC, "true" ,"false") AS ?interface)
+  BIND (IF(?ysoCinterface != ?ysoC, 
+            "rdfs:subClassOf+" ,
+            IF(?directRelation = rdfs:subClassOf ,
+               "rdfs:subClassOf",
+               IF(?directRelation = owl:equivalentClass,
+                  "owl:equivalentClass",
+                  "owl:equivalentClass/rdfs:subClassOf" # Because ysoC is ysoCInterface, but ?directRelation is not rdfs:subClassOf or owl:equivalentClass
+                  )
+              )
+          ) 
+	   AS ?relationType).
+  
+  BIND(IF(?ysoCinterface = ?ysoC2,
+          concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") has been deprecated in the newer YSO"),
+          concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") has a superordinate concept '",?ysoC2pref, "' (yso:",substr(str(?ysoC2),28) ,") that is deprecated in the newer YSO")
+          ) AS ?changeDescription)
+  
+  } 
+}
+}
+}ORDER BY ?domainC
+  
+  
+]]></sparql>
+</query>
+
+</mutu-config>
+

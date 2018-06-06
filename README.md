@@ -12,6 +12,7 @@ Because of the .xml-suffix, the file must be opened using File->Open
 dialog. It is not possible just to rename it to .xlsx, as Excel will
 complain of a broken file.
 
+```
    usage: mutu [-debug] [-domainOnt <arg>] [-help] [-list] [-newYso <arg>]
           [-query <arg>] [-test]
    Reports changes between an older YSO ontology attached to domain ontology
@@ -26,11 +27,15 @@ complain of a broken file.
      -test              run simple mutu test
     File format is determined by suffix, .ttl and .turtle are interpreted as
     turtle. All other suffixes are considered as rdf/xml.
+```
 
 Examples:
 
 Print help:
+```
 java -jar mutu.jar -help 
-
+```
 Report YSO changes:
+```
 java -jar mutu.jar -specOnt data/maotao.ttl data\yso-maotao.ttl -newYso data\ysoKehitys-2018-3-Boethius.rdf 
+```

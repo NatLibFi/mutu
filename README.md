@@ -21,7 +21,7 @@ complain of a broken file.
      -domainOnt <arg>   List of domain ontology files that include older YSO
                         (ttl|rdf)
      -help              Print this help message
-     -list              list avalable queries
+     -list              list available queries
      -newYso <arg>      List of ontology files (ttl|rdf/xml) for new YSO
      -query <arg>       List of specific queries to run, 1 is first
      -test              run simple mutu test

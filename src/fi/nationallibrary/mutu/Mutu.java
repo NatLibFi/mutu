@@ -761,7 +761,7 @@ public class Mutu {
 		runOptions.addOption(querySelectorOpt);
 		allOptions.addOption(querySelectorOpt);
 
-		Option listQueryOpt = Option.builder("list").desc("list avalable queries").build();
+		Option listQueryOpt = Option.builder("list").desc("list available queries").build();
 		helpOptions.addOption(listQueryOpt);
 		allOptions.addOption(listQueryOpt);
 

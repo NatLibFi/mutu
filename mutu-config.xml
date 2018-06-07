@@ -291,6 +291,10 @@ WHERE {
                                 ysometa:DeprecatedAggregateConcept .
                 } UNION {
 				?ysoC2 owl:deprecated true} } .
+				
+  #report deprecated concepts only through their superordinate concepts
+  #unless the deprecated concept is directly connected
+  FILTER(!(?ysoCinterface != ?ysoC && ?ysoC = ?ysoC2))
   
   {*yso-concept-selector-query*} 
   

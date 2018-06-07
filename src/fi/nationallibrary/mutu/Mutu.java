@@ -732,7 +732,7 @@ public class Mutu {
 	 */
 	private void parseArguments(String[] args) {
 
-		String[] specOntStrArr, newYsoStrArr, querySelectStrArr;
+		String[] domainOntStrArr, newYsoStrArr, querySelectStrArr;
 
 		CommandLine cmd = null;
 		Options allOptions = new Options();
@@ -740,14 +740,14 @@ public class Mutu {
 		Options helpOptions = new Options();
 		CommandLineParser parser = new DefaultParser();
 
-		Option specOntOpt = Option.builder("domainOnt")
+		Option domainOntOpt = Option.builder("domainOnt")
 				.desc("List of domain ontology files that include older YSO (ttl|rdf)").hasArg() // arguments are
 																									// required
 				.hasArgs() // n of arguments is unlimited
 				// .required() // option is required
 				.build();
-		runOptions.addOption(specOntOpt);
-		allOptions.addOption(specOntOpt);
+		runOptions.addOption(domainOntOpt);
+		allOptions.addOption(domainOntOpt);
 
 		Option newYsoOpt = Option.builder("newYso").desc("List of ontology files (ttl|rdf/xml) for new YSO").hasArg()
 				.hasArgs()
@@ -815,13 +815,13 @@ public class Mutu {
 		}
 
 		// Read files for the special ontology
-		specOntStrArr = cmd.getOptionValues("specOnt");
-		if (specOntStrArr == null) {
+		domainOntStrArr = cmd.getOptionValues("domainOnt");
+		if (domainOntStrArr == null) {
 			formatter.printHelp("mutu", header, allOptions, footer, true);
 			System.exit(-1);
 		}
 
-		for (String specOntStr : specOntStrArr) {
+		for (String specOntStr : domainOntStrArr) {
 			OntModel newSpecOntModel = getOntologyModel(specOntStr);
 			if (newSpecOntModel == null) {
 				logger.error("Error reading file: " + specOntStr);

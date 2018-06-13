@@ -51,6 +51,25 @@ FILTER (lang(?ysoCpref) = 'fi')
 ]]>
 </replace>
 </task>
+<task>
+<description>Counts the number of domainC subClasses that are not themselves directly connected to YSO and thus not on list on changed concepts.</description>
+<search>*count-domainC-subClasses-as-nroSubConcepts*</search>
+<replace>
+<![CDATA[
+  OPTIONAL{
+  SELECT  ?domainC (COUNT(*) AS ?nroSubConcepts)
+  WHERE{
+    ?subConcept rdfs:subClassOf+ ?domainC .
+	FILTER NOT EXISTS {
+	  ?subConcept rdfs:subClassOf|owl:equivalentClass ?someYsoC .
+	  ?someYsoC rdf:type ?someYsoCType .
+      {?someYsoCType rdfs:subClassOf+ owl:Class .
+        FILTER (strstarts(str(?someYsoCType),"http://www.yso.fi/onto/yso")) .}}
+  } GROUP BY ?domainC
+  }
+]]>
+</replace>
+</task>
 </substitutions>
 <!-- Queries are the heart of Mutu. All queries search for different types of changes, but report the changes in a common format.
 ?queryType ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription
@@ -61,7 +80,7 @@ Every query must contain one description an one query. Developer remarks can be 
 <sparql><![CDATA[
 # 1-same-pref.rq
 #prefLabel same
-SELECT DISTINCT ('1.1' AS ?queryType) ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
+SELECT DISTINCT ('1.1' AS ?queryType) ?domainC ?nroSubConcepts ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
 WHERE {
   GRAPH ?anyNamedGraph {
     {*yso-concept-selector-query*} .
@@ -73,7 +92,10 @@ WHERE {
   ?domainC skos:prefLabel ?ysoCpref .
   {*domain-concept-selector-query*}.
   BIND( "" AS ?interface)
-  BIND(concat("New YSO concept '",?ysoCpref, "' with the same prefLabel as in domain ontology") AS ?changeDescription)
+  BIND(concat("Uudella YSO käsitteellä '",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") on sama prefLabel kuin erikoisontologian käsitteellä") AS ?changeDescription)
+  
+  *count-domainC-subClasses-as-nroSubConcepts*
+  
 } ORDER BY ?domainC
 ]]></sparql>
 </query>
@@ -83,7 +105,7 @@ WHERE {
 <note>To reduce duplicate results, this query returns only domain ontology concepts which are directly connected to YSO. Remember to check their the sub concepts!!.</note>
 <sparql><![CDATA[
 # 2-diff-broad-pref.rq
-SELECT DISTINCT ('2.1' AS ?queryType) ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
+SELECT DISTINCT ('2.1' AS ?queryType) ?domainC ?nroSubConcepts ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
 WHERE {
    
   GRAPH ?anyNamedGraph {
@@ -100,7 +122,9 @@ WHERE {
   {*domain-concept-selector-query*}
   FILTER NOT EXISTS { ?domainC owl:equivalentClass ?ysoC } . 
   BIND( "" AS ?interface)
-  BIND(concat("New prefLabel of '",?ysoCpref, "' -> '",?ysoCnewPref,"' is the same with domain ontology concept and they are not equivalent") AS ?changeDescription) .
+  BIND(concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") käsitteen uusi prefLabel on sama kuin erikoisontologian käsitteellä") AS ?changeDescription) .
+  
+  *count-domainC-subClasses-as-nroSubConcepts*
   
 } ORDER BY ?domainC
 ]]></sparql>
@@ -111,7 +135,7 @@ WHERE {
 <note>To reduce duplicate results, this query returns only domain ontology concepts which are directly connected to YSO. Remember to check their the sub concepts!!.</note>
 <sparql><![CDATA[
 # 2-diff-broad-pref.rq
-SELECT DISTINCT ('2.2' AS ?queryType) ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
+SELECT DISTINCT ('2.2' AS ?queryType) ?domainC ?nroSubConcepts ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
 WHERE {
   {*domain-concept-selector-query*}
   ?domainC rdfs:subClassOf|owl:equivalentClass|owl:equivalentClass/rdfs:subClassOf ?ysoCinterface .
@@ -136,7 +160,7 @@ WHERE {
   FILTER NOT EXISTS { GRAPH ?yso {?ysoC owl:deprecated true } } . 
 
   OPTIONAL {?domainC ?directRelation ?ysoC} .
-  BIND (IF(?ysoCinterface = ?ysoC, "true" ,"false") AS ?interface)
+  BIND (IF(?ysoCinterface = ?ysoC, "kyllä" ,"ei") AS ?interface)
   BIND (IF(?ysoCinterface != ?ysoC, 
             "rdfs:subClassOf+" ,
             IF(?directRelation = rdfs:subClassOf ,
@@ -148,7 +172,9 @@ WHERE {
               )
           ) 
 	   AS ?relationType).
-  BIND(concat("prefLabel of '",?ysoCpref, "' concept has changed to '",?ysoCnewPref,"'") AS ?changeDescription) .
+  BIND(concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") käsitteen prefLabel on muuttunut -> '",?ysoCnewPref,"'") AS ?changeDescription) .
+  
+  *count-domainC-subClasses-as-nroSubConcepts*
   
 } ORDER BY ?domainC
 ]]></sparql>
@@ -159,7 +185,7 @@ WHERE {
 <note>remember to check the subClasses of the domain concept, which are not directly connected to YSO themselves </note>
 <sparql><![CDATA[
 #  	3-diff-broader.rq
-SELECT DISTINCT ?queryType ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
+SELECT DISTINCT ?queryType ?domainC ?nroSubConcepts ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
 WHERE{
 {
 SELECT DISTINCT ('3.1' AS ?queryType) ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
@@ -198,7 +224,7 @@ WHERE {
                                    }}
 
   OPTIONAL {?domainC ?directRelation ?ysoC} .
-  BIND (IF(?ysoCinterface = ?ysoC, "true" ,"false") AS ?interface)
+  BIND (IF(?ysoCinterface = ?ysoC, "kyllä" ,"ei") AS ?interface)
   BIND (IF(?ysoCinterface != ?ysoC, 
             "rdfs:subClassOf+" ,
             IF(?directRelation = rdfs:subClassOf ,
@@ -211,7 +237,7 @@ WHERE {
           ) 
 	   AS ?relationType).
   
-  BIND(concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") has a new superordinate concept  '",?ysoC2pref,"' (yso:",substr(str(?ysoC2),28) ,")") AS ?changeDescription)
+  BIND(concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") käsitteellä on uusi yläkäsite  '",?ysoC2pref,"' (yso:",substr(str(?ysoC2),28) ,")") AS ?changeDescription)
 }
   
 } UNION {
@@ -249,7 +275,7 @@ WHERE {
                                    }}
   
   OPTIONAL {?domainC ?directRelation ?ysoC} .
-  BIND (IF(?ysoCinterface = ?ysoC, "true" ,"false") AS ?interface)
+  BIND (IF(?ysoCinterface = ?ysoC, "kyllä" ,"ei") AS ?interface)
   BIND (IF(?ysoCinterface != ?ysoC, 
             "rdfs:subClassOf+" ,
             IF(?directRelation = rdfs:subClassOf ,
@@ -262,7 +288,7 @@ WHERE {
           ) 
 	   AS ?relationType).
   
-  BIND(concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") does not have superordinate concept  '",?ysoC2pref,"' (yso:",substr(str(?ysoC2),28) ,") in the newer YSO") AS ?changeDescription)
+  BIND(concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") käsitteeltä on poistunut yläkäsite  '",?ysoC2pref,"' (yso:",substr(str(?ysoC2),28) ,") in the newer YSO") AS ?changeDescription)
   }
 }
   
@@ -303,7 +329,7 @@ WHERE {
   
   
   OPTIONAL {?domainC ?directRelation ?ysoC} .
-  BIND (IF(?ysoCinterface = ?ysoC, "true" ,"false") AS ?interface)
+  BIND (IF(?ysoCinterface = ?ysoC, "kyllä" ,"ei") AS ?interface)
   BIND (IF(?ysoCinterface != ?ysoC, 
             "rdfs:subClassOf+" ,
             IF(?directRelation = rdfs:subClassOf ,
@@ -317,13 +343,16 @@ WHERE {
 	   AS ?relationType).
   
   BIND(IF(?ysoCinterface = ?ysoC2,
-          concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") has been deprecated in the newer YSO"),
-          concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") has a superordinate concept '",?ysoC2pref, "' (yso:",substr(str(?ysoC2),28) ,") that is deprecated in the newer YSO")
+          concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") käsite on deprekoitu uudessa YSOssa"),
+          concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") käsitteellä on yläkäsite '",?ysoC2pref, "' (yso:",substr(str(?ysoC2),28) ,"), joka on deprekoitu uudessa YSOssa")
           ) AS ?changeDescription)
   
   } 
 }
 }
+
+*count-domainC-subClasses-as-nroSubConcepts*
+
 }ORDER BY ?domainC
   
   

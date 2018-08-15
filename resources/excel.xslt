@@ -253,8 +253,6 @@
   <Names>
    <NamedRange ss:Name="_FilterDatabase" ss:RefersTo="=allQueryResults!R1C1:R1C14"
     ss:Hidden="1"/>
-   <NamedRange ss:Name="_FilterDatabase" ss:RefersTo="=allQueryResults!R1C1:R1C14"
-    ss:Hidden="1"/>
   </Names>
   <Table ss:ExpandedColumnCount="14" x:FullColumns="1"
    x:FullRows="1"><xsl:attribute name="ss:ExpandedRowCount"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result)+1"/></xsl:attribute>

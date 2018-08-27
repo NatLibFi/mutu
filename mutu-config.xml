@@ -288,7 +288,7 @@ WHERE {
           ) 
 	   AS ?relationType).
   
-  BIND(concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") käsitteeltä on poistunut yläkäsite  '",?ysoC2pref,"' (yso:",substr(str(?ysoC2),28) ,") in the newer YSO") AS ?changeDescription)
+  BIND(concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") käsitteeltä on poistunut yläkäsite  '",?ysoC2pref,"' (yso:",substr(str(?ysoC2),28) ,") uudessa YSOssa") AS ?changeDescription)
   }
 }
   

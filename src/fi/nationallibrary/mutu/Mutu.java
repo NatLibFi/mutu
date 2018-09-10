@@ -122,6 +122,10 @@ public class Mutu {
 	 */
 	private OntModel newYsoOntModel = null;
 	/**
+	 * Short name for the ontology in Finto.fi
+	 */
+	private String fintoNameStr = "fintoName";
+	/**
 	 * List of SPARQL prefixes shared by all MutuQueries. Applied dynamically when
 	 * executing SPARQL.
 	 */
@@ -391,6 +395,7 @@ public class Mutu {
 		ByteArrayOutputStream xsltOutputStream = new ByteArrayOutputStream();
 		try {
 			Transformer transformer = tFactory.newTransformer(new StreamSource(styleInputStream));
+			transformer.setParameter("fintoName", fintoNameStr);
 			ByteArrayOutputStream xmlResultSetOutputStream = resultSetToOutputStream("xml", resultSet);
 			// InputStream xmlResultInputStream = new InputStream(new
 			// StringReader(xmlResultOutputStream.toString("UTF-8")));
@@ -655,6 +660,17 @@ public class Mutu {
 		}
 		newYsoOntModel.add(ontModel);
 	}
+	
+	/**
+	 * Sets the name of the ontology for finto.fi linking.
+	 * 
+	 * @param fintoNameStr
+	 *            short name for the ontology in finto.fi
+	 */
+	public void setFintoName(String fintoNameStr) {
+		this.fintoNameStr = fintoNameStr;
+	}
+
 
 	/**
 	 * Returns a OntModel from a file path. Format is TURTLE if file suffix is ttl
@@ -733,6 +749,7 @@ public class Mutu {
 	private void parseArguments(String[] args) {
 
 		String[] domainOntStrArr, newYsoStrArr, querySelectStrArr;
+		String fintoNameStr;
 
 		CommandLine cmd = null;
 		Options allOptions = new Options();
@@ -755,6 +772,12 @@ public class Mutu {
 				.build();
 		runOptions.addOption(newYsoOpt);
 		allOptions.addOption(newYsoOpt);
+		
+		Option fintoNameOpt = Option.builder("fintoName").desc("Short name for the ontology in Finto.fi (ie. jupo). Used for linking.").hasArg()
+				// .required()
+				.build();
+		runOptions.addOption(fintoNameOpt);
+		allOptions.addOption(fintoNameOpt);
 
 		Option querySelectorOpt = Option.builder("query").desc("List of specific queries to run, 1 is first").hasArg()
 				.type(Number.class).build();
@@ -843,6 +866,10 @@ public class Mutu {
 				System.exit(-1);
 			}
 			addNewYsoOntology(tmpNewYsoOntModel);
+		}
+		
+		if (cmd.hasOption("fintoName")) {
+			setFintoName(cmd.getOptionValue("fintoName"));
 		}
 
 		if (cmd.hasOption("query")) {

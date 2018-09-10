@@ -8,6 +8,8 @@
   xmlns:html="http://www.w3.org/TR/REC-html40"
   xmlns:sparqlResults="http://www.w3.org/2005/sparql-results#">
   <xsl:output method="xml"/> 
+  
+  <xsl:param name="fintoName">fintoName</xsl:param>
  
 <xsl:variable name="countRows" select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result)+1"/>
  
@@ -390,7 +392,7 @@
 	<Cell ss:Formula="=COUNTIF(R2C[3]:R{$countRows+1}C[3],RC[3]) &amp; &quot; / {$countYsoC}&quot;"><Data ss:Type="String"><xsl:value-of select="concat($countYsoC,' / ',$countYsoC)"/></Data></Cell>
     <Cell><Data ss:Type="String"><xsl:value-of select="$ysoCtypes"/></Data></Cell>
     <Cell><Data ss:Type="String"><xsl:value-of select="$changeDescription"/></Data></Cell>
-    <Cell ss:HRef="http://finto.fi/maotao/fi/page/?uri={$ysoC}">
+    <Cell ss:HRef="http://finto.fi/{$fintoName}/fi/page/?uri={$ysoC}">
           <Data ss:Type="String"><xsl:value-of select="$ysoCShort"/></Data></Cell>
 	<Cell ss:HRef="{$ysoC}">
      <Data ss:Type="String">uusi</Data></Cell>

@@ -250,20 +250,22 @@
  </Styles>
  <Worksheet ss:Name="allQueryResults">
   <Names>
-   <NamedRange ss:Name="_FilterDatabase" ss:RefersTo="=allQueryResults!R1C1:R1C14"
+   <NamedRange ss:Name="_FilterDatabase" ss:RefersTo="=allQueryResults!R1C1:R1C16"
     ss:Hidden="1"/>
   </Names>
-  <Table ss:ExpandedColumnCount="14" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="16" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="13"><xsl:attribute name="ss:ExpandedRowCount"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result)+1"/></xsl:attribute>
    <Column ss:AutoFitWidth="0" ss:Width="45"/>
    <Column ss:Width="198.75"/>
    <Column ss:AutoFitWidth="0" ss:Width="103"/>
+   <Column ss:AutoFitWidth="0" ss:Width="45"/>
    <Column ss:AutoFitWidth="0" ss:Width="45"/>
    <Column ss:AutoFitWidth="0" ss:Width="33.5"/>
    <Column ss:Hidden="1" ss:AutoFitWidth="0" ss:Width="274.75"/>
    <Column ss:AutoFitWidth="0" ss:Width="100"/>
    <Column ss:Hidden="1" ss:AutoFitWidth="0" ss:Width="54.25"/>
    <Column ss:AutoFitWidth="0" ss:Width="113.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="45"/>
    <Column ss:AutoFitWidth="0" ss:Width="45"/>
    <Column ss:Hidden="1" ss:AutoFitWidth="0" ss:Width="110"/>
    <Column ss:AutoFitWidth="0" ss:Width="650"/>
@@ -280,9 +282,13 @@
       ss:Name="_FilterDatabase"/></Cell>
     <Cell><Data ss:Type="String">Erikoisontologian käsitteen URI-linkki </Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
-    <Cell><Data ss:Type="String">Erikoisontologian käsitteen lkm taulukossa</Data><Comment><ss:Data
+    <Cell><Data ss:Type="String">Erikoisontologian käsitteen lkm nyt</Data><Comment><ss:Data
        xmlns="http://www.w3.org/TR/REC-html40"><Font html:Face="Tahoma"
-        x:Family="Swiss" html:Size="9" html:Color="#000000"> erikoisontologian käsitteeseen liittyvien muutosten määrä (taulukon rivipoistojen jälkeen / alun perin) </Font></ss:Data></Comment><NamedCell
+        x:Family="Swiss" html:Size="9" html:Color="#000000"> erikoisontologian käsitteeseen liittyvien muutosten määrä taulukon rivipoistojen jälkeen</Font></ss:Data></Comment><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+    <Cell><Data ss:Type="String">Erikoisontologian käsitteen lkm alun perin</Data><Comment><ss:Data
+       xmlns="http://www.w3.org/TR/REC-html40"><Font html:Face="Tahoma"
+        x:Family="Swiss" html:Size="9" html:Color="#000000"> erikoisontologian käsitteeseen liittyvien muutosten määrä taulukossa alun perin</Font></ss:Data></Comment><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
     <Cell><Data ss:Type="String">Ala-käsitteiden määrä</Data><Comment><ss:Data
        xmlns="http://www.w3.org/TR/REC-html40"><Font html:Face="Tahoma"
@@ -302,9 +308,13 @@
        xmlns="http://www.w3.org/TR/REC-html40"><Font html:Face="Tahoma"
         x:Family="Swiss" html:Size="9" html:Color="#000000">YSO-käsitteen prefLabel siinä YSO-versiossa, joka sisältyy erikoisontologiaan</Font></ss:Data></Comment><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
-    <Cell><Data ss:Type="String">YSO-käsitteen lkm taulukossa</Data><Comment><ss:Data
+    <Cell><Data ss:Type="String">YSO-käsitteen lkm nyt</Data><Comment><ss:Data
        xmlns="http://www.w3.org/TR/REC-html40"><Font html:Face="Tahoma"
-        x:Family="Swiss" html:Size="9" html:Color="#000000"> YSO-käsitteeseen liittyvien muutosten määrä erikoisontologiassa (taulukon rivipoistojen jälkeen / alun perin) </Font></ss:Data></Comment><NamedCell
+        x:Family="Swiss" html:Size="9" html:Color="#000000"> YSO-käsitteeseen liittyvien muutosten määrä erikoisontologiassa taulukon rivipoistojen jälkeen</Font></ss:Data></Comment><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+    <Cell><Data ss:Type="String">YSO-käsitteen lkm alun perin</Data><Comment><ss:Data
+       xmlns="http://www.w3.org/TR/REC-html40"><Font html:Face="Tahoma"
+        x:Family="Swiss" html:Size="9" html:Color="#000000"> YSO-käsitteeseen liittyvien muutosten määrä erikoisontologiassa alun perin</Font></ss:Data></Comment><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
     <Cell><Data ss:Type="String">Käsitetyyppi YSOssa</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
@@ -351,13 +361,15 @@
    <ProtectObjects>False</ProtectObjects>
    <ProtectScenarios>False</ProtectScenarios>
   </WorksheetOptions>
-  <AutoFilter x:Range="R1C1:R1C14"
+  <AutoFilter x:Range="R1C1:R1C16"
    xmlns="urn:schemas-microsoft-com:office:excel">
   </AutoFilter>
  </Worksheet>
 </Workbook>
   </xsl:template>
 
+  <xsl:key name="keyDomainC" match="sparqlResults:result" use="sparqlResults:binding[@name='domainC']/*[1]"/>
+  <xsl:key name="keyYsoC" match="sparqlResults:result" use="sparqlResults:binding[@name='ysoC']/*[1]"/>
   
   <xsl:template match="sparqlResults:result">
     <xsl:variable name="queryType" select="sparqlResults:binding[@name='queryType']/*[1]"/>
@@ -373,9 +385,9 @@
     <xsl:variable name="ysoCpref" select="sparqlResults:binding[@name='ysoCpref']/*[1]"/>
     <xsl:variable name="ysoCtypes" select="sparqlResults:binding[@name='ysoCtypes']/*[1]"/>
     <xsl:variable name="changeDescription" select="sparqlResults:binding[@name='changeDescription']/*[1]"/>
-	<xsl:variable name="countDomainC" select="count(../sparqlResults:result/sparqlResults:binding[@name='domainC']/*[1][.=current()/sparqlResults:binding[@name='domainC']/*[1]])"/>
-	<xsl:variable name="countYsoC" select="count(../sparqlResults:result/sparqlResults:binding[@name='ysoC']/*[1][.=current()/sparqlResults:binding[@name='ysoC']/*[1]])"/>
-	<xsl:variable name="currentRow" select="count(preceding::sparqlResults:result)"/>
+	<xsl:variable name="countDomainC" select="count(key('keyDomainC',$domainC))"/>
+	<xsl:variable name="countYsoC" select="count(key('keyYsoC',$ysoC))"/>
+	<xsl:variable name="currentRow" select="position()"/>
 	
    <Row xmlns="urn:schemas-microsoft-com:office:spreadsheet">
     <Cell><Data ss:Type="String"><xsl:value-of select="$queryType"/></Data></Cell>
@@ -383,13 +395,22 @@
     <Cell ss:HRef="{$domainC}">
 	 <Data ss:Type="String"><xsl:value-of select="$domainCShort"/></Data>
 	</Cell>
-	<Cell ss:Formula="=COUNTIF(R2C[-1]:R{$countRows+1}C[-1],RC[-1]) &amp; &quot; / {$countDomainC}&quot;"><Data ss:Type="String"><xsl:value-of select="concat($countDomainC,' / ',$countDomainC)"/></Data></Cell>
-    <Cell><Data ss:Type="String"><xsl:value-of select="$nroSubConcepts"/></Data></Cell>
-    <Cell><Data ss:Type="String"><xsl:value-of select="$domainCtypes"/></Data></Cell>
+	<Cell ss:Formula="=COUNTIF(R2C[-1]:R{$countRows+1}C[-1],RC[-1])"><Data ss:Type="Number"><xsl:value-of select="$countDomainC"/></Data></Cell>
+	<Cell><Data ss:Type="Number"><xsl:value-of select="$countDomainC"/></Data></Cell>
+    <xsl:choose>
+      <xsl:when test="$nroSubConcepts &gt;0 ">
+        <Cell><Data ss:Type="Number"><xsl:value-of select="$nroSubConcepts"/></Data></Cell>
+		<Cell><Data ss:Type="String"><xsl:value-of select="$domainCtypes"/></Data></Cell>
+      </xsl:when>
+	  <xsl:otherwise>
+        <Cell ss:Index="7"><Data ss:Type="String"><xsl:value-of select="$domainCtypes"/></Data></Cell>
+      </xsl:otherwise>
+	</xsl:choose>
     <Cell><Data ss:Type="String"><xsl:value-of select="$relationType"/></Data></Cell>
     <Cell><Data ss:Type="String"><xsl:value-of select="$interface"/></Data></Cell>
     <Cell><Data ss:Type="String"><xsl:value-of select="$ysoCpref"/></Data></Cell>
-	<Cell ss:Formula="=COUNTIF(R2C[3]:R{$countRows+1}C[3],RC[3]) &amp; &quot; / {$countYsoC}&quot;"><Data ss:Type="String"><xsl:value-of select="concat($countYsoC,' / ',$countYsoC)"/></Data></Cell>
+	<Cell ss:Formula="=COUNTIF(R2C[4]:R{$countRows+1}C[4],RC[4])"><Data ss:Type="Number"><xsl:value-of select="$countYsoC"/></Data></Cell>
+	<Cell><Data ss:Type="Number"><xsl:value-of select="$countYsoC"/></Data></Cell>
     <Cell><Data ss:Type="String"><xsl:value-of select="$ysoCtypes"/></Data></Cell>
     <Cell><Data ss:Type="String"><xsl:value-of select="$changeDescription"/></Data></Cell>
     <Cell ss:HRef="http://finto.fi/{$fintoName}/fi/page/?uri={$ysoC}">

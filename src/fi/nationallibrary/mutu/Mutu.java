@@ -81,10 +81,10 @@ import org.xml.sax.SAXException;
  * used by other Java programs.
  * <P>
  * Main principle of Mutu is to run a set of SPARQL queries defined in a
- * mutu-config.xml file. If Mutu constructor is called without arguments, it
- * first tries to load configuration file from the execution directory and then
- * form the root of the jar file. Mutu constructor can also be supplied with the
- * configuration XML or it can be reloaded afterwards.
+ * mutu-config.xml file. Configuration is loaded through loadConfig(*) methods.
+ * loadConfig() method without arguments tries to load configuration file from
+ * the execution directory and then form the root of the jar file. Custom
+ * configurations can also be provided directly using loadConfig(*) methods.
  * <P>
  * Mutu Queries in the configuration document must all return exactly the same
  * SPARQL result format so the results can be appended together. This format
@@ -112,7 +112,7 @@ public class Mutu {
 	/**
 	 * The OntModelSpec used when loading ontologies.
 	 */
-	private OntModelSpec mutuOntModelSpec = OntModelSpec.OWL_MEM;
+	private OntModelSpec mutuOntModelSpec = OntModelSpec.RDFS_MEM;
 	/**
 	 * Domain ontology
 	 */
@@ -121,6 +121,10 @@ public class Mutu {
 	 * New YSO ontology
 	 */
 	private OntModel newYsoOntModel = null;
+	/**
+	 * Language of labels in SPARQL queries, defaults to 'fi' for finnish
+	 */
+	private String langStr = "fi";
 	/**
 	 * Short name for the ontology in Finto.fi
 	 */
@@ -152,58 +156,63 @@ public class Mutu {
 	 *            command line arguments, use -help for more information.
 	 */
 	public static void main(String[] args) {
-		//We don't need to log Jena messages, suppress warning
+		// We don't need to log Jena messages, suppress warning
 		org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.OFF);
-		Mutu mutu = null;
+		Mutu mutu = new Mutu();
+		mutu.parseArguments(args);
 		try {
-			mutu = new Mutu();
+			mutu.loadConfig();
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		mutu.parseArguments(args);
 		mutu.runMutuQueries();
 		// mutu.writeOntologies();
 		System.out.println("Finished");
 	}
 
 	/**
-	 * Initialises the Mutu object and loads the SPARQL queries from mutu-config.xml
-	 * file. The configuration file is first searched from execution folder and then
-	 * from the root of the jar file.
+	 * Initialises the Mutu object.
+	 */
+	public Mutu() {
+
+	}
+
+	/**
+	 * Loads the SPARQL queries from mutu-config.xml file. The configuration file is
+	 * first searched from execution folder and then from the root of the jar file.
 	 * 
 	 * @throws Exception
 	 *             if Mutu config can not be loaded or parsed properly.
 	 */
-	public Mutu() throws Exception {
+	public void loadConfig() throws Exception {
 		parseConfigDocument(getConfigDocument());
 
 	}
 
 	/**
-	 * Initialises the Mutu object and loads the SPARQL queries from the given
-	 * configuration Document.
+	 * Loads the SPARQL queries from the given configuration Document.
 	 * 
 	 * @param configurationDocument
 	 *            XML Document holding a Mutu configuration.
 	 * @throws Exception
 	 *             if Mutu config can not be loaded or parsed properly.
 	 */
-	public Mutu(Document configurationDocument) throws Exception {
+	public void loadConfig(Document configurationDocument) throws Exception {
 		parseConfigDocument(configurationDocument);
 
 	}
 
 	/**
-	 * Initialises the Mutu object and loads the SPARQL queries from the given
-	 * configuration XML given as UTF-8 encoded InputStream.
+	 * Loads the SPARQL queries from the given configuration XML given as UTF-8
+	 * encoded InputStream.
 	 * 
 	 * @param XMLconfigInputStream
 	 *            XML Document holding a Mutu configuration.
 	 * @throws Exception
 	 *             if Mutu config can not be loaded or parsed properly
 	 */
-	public Mutu(InputStream XMLconfigInputStream) throws Exception {
+	public void loadConfig(InputStream XMLconfigInputStream) throws Exception {
 		DocumentBuilder db;
 		db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		InputSource is = new InputSource();
@@ -216,15 +225,14 @@ public class Mutu {
 	}
 
 	/**
-	 * Initialises the Mutu object and loads the SPARQL queries from the given
-	 * configuration XML given as String.
+	 * Loads the SPARQL queries from the given configuration XML given as String.
 	 * 
 	 * @param XMLconfigString
 	 *            XML Document holding a Mutu configuration.
 	 * @throws Exception
 	 *             if Mutu config can not be loaded or parsed properly
 	 */
-	public Mutu(String XMLconfigString) throws Exception {
+	public void loadConfig(String XMLconfigString) throws Exception {
 		DocumentBuilder db;
 		db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		InputSource is = new InputSource();
@@ -297,8 +305,15 @@ public class Mutu {
 					Element taskElement = (Element) taskNodeList.item(iTask);
 					Element searchElement = getFirstChildElementByName(taskElement, "search");
 					String searchStr = (searchElement != null) ? searchElement.getTextContent() : null;
-					Element replaceElement = getFirstChildElementByName(taskElement, "replace");
-					String replaceStr = (replaceElement != null) ? replaceElement.getTextContent() : null;
+					String replaceStr;
+					// Override default label language in queries
+					if (searchStr.equals("*lang*")) {
+						System.out.println("Found *lang*");
+						replaceStr = this.langStr;
+					} else {
+						Element replaceElement = getFirstChildElementByName(taskElement, "replace");
+						replaceStr = (replaceElement != null) ? replaceElement.getTextContent() : null;
+					}
 					if (searchStr != null || searchStr != "" || replaceStr != null || replaceStr != "")
 						sparqlStr = sparqlStr.replace(searchStr, replaceStr);
 				}
@@ -381,8 +396,8 @@ public class Mutu {
 
 	/**
 	 * Transforms Jena ResultSet using a CSS stylesheet. ResultSet is first
-	 * transformed to standard SPARQL Query Results XML Format by Jena, after
-	 * which the XSLT transformation is applied.
+	 * transformed to standard SPARQL Query Results XML Format by Jena, after which
+	 * the XSLT transformation is applied.
 	 * 
 	 * @param resultSet
 	 *            ResultSet to be formatted
@@ -660,7 +675,17 @@ public class Mutu {
 		}
 		newYsoOntModel.add(ontModel);
 	}
-	
+
+	/**
+	 * Sets the language used for labels in SPARQL
+	 * 
+	 * @param langStr
+	 *            language for labels in SPARQL
+	 */
+	public void setLang(String langStr) {
+		this.langStr = langStr;
+	}
+
 	/**
 	 * Sets the name of the ontology for finto.fi linking.
 	 * 
@@ -670,7 +695,6 @@ public class Mutu {
 	public void setFintoName(String fintoNameStr) {
 		this.fintoNameStr = fintoNameStr;
 	}
-
 
 	/**
 	 * Returns a OntModel from a file path. Format is TURTLE if file suffix is ttl
@@ -749,7 +773,6 @@ public class Mutu {
 	private void parseArguments(String[] args) {
 
 		String[] domainOntStrArr, newYsoStrArr, querySelectStrArr;
-		String fintoNameStr;
 
 		CommandLine cmd = null;
 		Options allOptions = new Options();
@@ -772,12 +795,17 @@ public class Mutu {
 				.build();
 		runOptions.addOption(newYsoOpt);
 		allOptions.addOption(newYsoOpt);
-		
-		Option fintoNameOpt = Option.builder("fintoName").desc("Short name for the ontology in Finto.fi (ie. jupo). Used for linking.").hasArg()
+
+		Option fintoNameOpt = Option.builder("fintoName")
+				.desc("Short name for the ontology in Finto.fi (ie. jupo). Used for linking.").hasArg()
 				// .required()
 				.build();
 		runOptions.addOption(fintoNameOpt);
 		allOptions.addOption(fintoNameOpt);
+
+		Option langOpt = Option.builder("lang").desc("Label language used for concepts").hasArg().build();
+		runOptions.addOption(langOpt);
+		allOptions.addOption(langOpt);
 
 		Option querySelectorOpt = Option.builder("query").desc("List of specific queries to run, 1 is first").hasArg()
 				.type(Number.class).build();
@@ -867,7 +895,11 @@ public class Mutu {
 			}
 			addNewYsoOntology(tmpNewYsoOntModel);
 		}
-		
+
+		if (cmd.hasOption("lang")) {
+			setLang(cmd.getOptionValue("lang"));
+		}
+
 		if (cmd.hasOption("fintoName")) {
 			setFintoName(cmd.getOptionValue("fintoName"));
 		}
@@ -888,7 +920,7 @@ public class Mutu {
 			}
 		}
 	}
-	
+
 	/**
 	 * Test the generic functioning of the Mutu program with a simple xml
 	 * configuration and data. Returns true if test is successful. Is invoked in
@@ -897,49 +929,24 @@ public class Mutu {
 	 * @return true if test was successful
 	 */
 	private boolean testMutu() {
-		
+
 		String genericOntologyStr = "@prefix dc:   <http://purl.org/dc/elements/1.1/> .\n"
 				+ "@prefix test:     <http://example.org/book/> .\n" + "test:book1  dc:title  \"Book1 Title\" .";
 		String namedOntologyStr = "@prefix dc:   <http://purl.org/dc/elements/1.1/> .\n"
 				+ "@prefix test:     <http://example.org/book/> .\n" + "test:book2  dc:title  \"Book2 Title\" .";
-		String mutuConfigStr = "<mutu-config>\r\n" + 
-				"<common-prefix-map>\r\n" + 
-				"<![CDATA[\r\n" + 
-				"PREFIX dc:   <http://purl.org/dc/elements/1.1/>\r\n" + 
-				"PREFIX test:     <http://example.org/book/>\r\n" + 
-				"]]>\r\n" + 
-				"</common-prefix-map>\r\n" + 
-				"<substitutions>\r\n" + 
-				"<task>\r\n" + 
-				"<description>Sets the title property</description>\r\n" + 
-				"<search>*title-property*</search>\r\n" + 
-				"<replace><![CDATA[dc:title]]></replace>\r\n" + 
-				"</task>\r\n" + 
-				"</substitutions>\r\n" + 
-				"<query>\r\n" + 
-				"<description>Test query 1</description>\r\n" + 
-				"<sparql><![CDATA[\r\n" + 
-				"SELECT ?book\r\n" + 
-				"WHERE {\r\n" + 
-				"{?book *title-property* ?name}\r\n" + 
-				"UNION\r\n" + 
-				"{GRAPH ?namedOntology { ?book *title-property* ?name}}\r\n" + 
-				"}\r\n" + 
-				"]]></sparql>\r\n" + 
-				"</query>\r\n" + 
-				"<query>\r\n" + 
-				"<description>Test query 2</description>\r\n" + 
-				"<sparql><![CDATA[\r\n" + 
-				"SELECT ?book\r\n" + 
-				"WHERE {\r\n" + 
-				"{?book *title-property* ?name}\r\n" + 
-				"UNION\r\n" + 
-				"{GRAPH ?namedOntology { ?book *title-property* ?name}}\r\n" + 
-				"}\r\n" + 
-				"]]></sparql>\r\n" + 
-				"</query>\r\n" + 
-				"</mutu-config>";
-		
+		String mutuConfigStr = "<mutu-config>\r\n" + "<common-prefix-map>\r\n" + "<![CDATA[\r\n"
+				+ "PREFIX dc:   <http://purl.org/dc/elements/1.1/>\r\n"
+				+ "PREFIX test:     <http://example.org/book/>\r\n" + "]]>\r\n" + "</common-prefix-map>\r\n"
+				+ "<substitutions>\r\n" + "<task>\r\n" + "<description>Sets the title property</description>\r\n"
+				+ "<search>*title-property*</search>\r\n" + "<replace><![CDATA[dc:title]]></replace>\r\n"
+				+ "</task>\r\n" + "</substitutions>\r\n" + "<query>\r\n" + "<description>Test query 1</description>\r\n"
+				+ "<sparql><![CDATA[\r\n" + "SELECT ?book\r\n" + "WHERE {\r\n" + "{?book *title-property* ?name}\r\n"
+				+ "UNION\r\n" + "{GRAPH ?namedOntology { ?book *title-property* ?name}}\r\n" + "}\r\n"
+				+ "]]></sparql>\r\n" + "</query>\r\n" + "<query>\r\n" + "<description>Test query 2</description>\r\n"
+				+ "<sparql><![CDATA[\r\n" + "SELECT ?book\r\n" + "WHERE {\r\n" + "{?book *title-property* ?name}\r\n"
+				+ "UNION\r\n" + "{GRAPH ?namedOntology { ?book *title-property* ?name}}\r\n" + "}\r\n"
+				+ "]]></sparql>\r\n" + "</query>\r\n" + "</mutu-config>";
+
 		DocumentBuilder db;
 		try {
 			db = DocumentBuilderFactory.newInstance().newDocumentBuilder();

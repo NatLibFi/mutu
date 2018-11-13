@@ -10,8 +10,6 @@ PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 PREFIX skosext: <http://purl.org/finnonto/schema/skosext#>
 PREFIX dc11: <http://purl.org/dc/elements/1.1/>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX puhometa: <http://www.yso.fi/onto/puho-meta/>
-PREFIX maometa: <http://www.yso.fi/onto/mao-meta/>
 PREFIX ysometa: <http://www.yso.fi/onto/yso-meta/>
 PREFIX yso-meta: <http://www.yso.fi/onto/yso-meta/2007-03-02/>
 ]]>
@@ -30,7 +28,7 @@ WHERE {
 FILTER (!strstarts(str(?domainCtype),"http://www.yso.fi/onto/yso") &&
               !strstarts(str(?domainCtype),"http://www.w3.org/2002/07/owl")) .
 ?domainC skos:prefLabel ?domainCpref .
-FILTER (lang(?domainCpref) = 'fi')
+FILTER (lang(?domainCpref) = '*lang*')
 } GROUP BY ?domainC ?domainCpref
 ]]>
 </replace>
@@ -46,7 +44,7 @@ WHERE {
 ?ysoCtype rdfs:subClassOf+ owl:Class .
 FILTER (strstarts(str(?ysoCtype),"http://www.yso.fi/onto/yso")) .
 ?ysoC skos:prefLabel ?ysoCpref .
-FILTER (lang(?ysoCpref) = 'fi')
+FILTER (lang(?ysoCpref) = '*lang*')
 } GROUP BY ?ysoC ?ysoCpref
 ]]>
 </replace>
@@ -69,6 +67,12 @@ FILTER (lang(?ysoCpref) = 'fi')
   }
 ]]>
 </replace>
+</task>
+<task>
+<description>Set label language (override by command line switch)</description>
+<note>Must be last (to replace in replacements) !!</note>
+<search>*lang*</search>
+<replace>fi</replace>
 </task>
 </substitutions>
 <!-- Queries are the heart of Mutu. All queries search for different types of changes, but report the changes in a common format.
@@ -110,7 +114,7 @@ WHERE {
    
   GRAPH ?anyNamedGraph {
     ?ysoC skos:prefLabel ?ysoCnewPref .
-    FILTER(lang(?ysoCnewPref) = 'fi') .
+    FILTER(lang(?ysoCnewPref) = '*lang*') .
     #FILTER NOT EXISTS {?ysoC skos:prefLabel ?ysoCpref} .
     FILTER NOT EXISTS {{?ysoC owl:deprecated true} UNION {?ysoC rdf:type ysometa:Hierarchy}} . 
   }
@@ -152,7 +156,7 @@ WHERE {
   {*yso-concept-selector-query*} 
   GRAPH ?anyNamedGraph {
     ?ysoC skos:prefLabel ?ysoCnewPref .
-    FILTER(lang(?ysoCnewPref) = 'fi') .
+    FILTER(lang(?ysoCnewPref) = '*lang*') .
     #FILTER NOT EXISTS {?ysoC skos:prefLabel ?ysoCpref} .
     FILTER NOT EXISTS {{?ysoC owl:deprecated true} UNION {?ysoC rdf:type ysometa:Hierarchy}} . 
   }
@@ -201,7 +205,7 @@ WHERE {
     
     ?ysoC rdfs:subClassOf ?ysoC2 .
     ?ysoC2 skos:prefLabel ?ysoC2pref .
-    FILTER(lang(?ysoC2pref) = 'fi')
+    FILTER(lang(?ysoC2pref) = '*lang*')
   }
   ?ysoCinterface rdfs:subClassOf* ?ysoC .
   
@@ -266,7 +270,7 @@ WHERE {
   {*yso-concept-selector-query*} 
   
   {?ysoC2 skos:prefLabel ?ysoC2pref .
-  FILTER(lang(?ysoC2pref) = 'fi')}
+  FILTER(lang(?ysoC2pref) = '*lang*')}
   
   FILTER NOT EXISTS { GRAPH ?yso { {?ysoC owl:deprecated true . } UNION 
                                    {?ysoC rdf:type  ysometa:DeprecatedConcept , ysometa:DeprecatedAggregateConcept . } UNION
@@ -325,7 +329,7 @@ WHERE {
   {*yso-concept-selector-query*} 
   
   {?ysoC2 skos:prefLabel ?ysoC2pref .
-  FILTER(lang(?ysoC2pref) = 'fi')}
+  FILTER(lang(?ysoC2pref) = '*lang*')}
   
   
   OPTIONAL {?domainC ?directRelation ?ysoC} .

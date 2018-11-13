@@ -308,7 +308,6 @@ public class Mutu {
 					String replaceStr;
 					// Override default label language in queries
 					if (searchStr.equals("*lang*")) {
-						System.out.println("Found *lang*");
 						replaceStr = this.langStr;
 					} else {
 						Element replaceElement = getFirstChildElementByName(taskElement, "replace");

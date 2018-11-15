@@ -99,6 +99,7 @@ WHERE {
   BIND(concat("Uudella YSO käsitteellä '",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") on sama prefLabel kuin erikoisontologian käsitteellä") AS ?changeDescription)
   
   *count-domainC-subClasses-as-nroSubConcepts*
+  BIND ("Ei suhdetta" AS ?relationType)
   
 } ORDER BY ?domainC
 ]]></sparql>
@@ -129,7 +130,7 @@ WHERE {
   BIND(concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") käsitteen uusi prefLabel on sama kuin erikoisontologian käsitteellä") AS ?changeDescription) .
   
   *count-domainC-subClasses-as-nroSubConcepts*
-  
+  BIND ("Ei suhdetta" AS ?relationType)
 } ORDER BY ?domainC
 ]]></sparql>
 </query>

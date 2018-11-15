@@ -416,7 +416,7 @@
     <Cell ss:HRef="http://finto.fi/{$fintoName}/fi/page/?uri={$ysoC}">
           <Data ss:Type="String"><xsl:value-of select="$ysoCShort"/></Data></Cell>
 	<Cell ss:HRef="{$ysoC}">
-     <Data ss:Type="String">uusi</Data></Cell>
+     <Data ss:Type="String"><xsl:value-of select="$ysoCShort"/></Data></Cell>
    </Row>
   </xsl:template>
 

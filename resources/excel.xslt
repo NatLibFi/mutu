@@ -243,30 +243,56 @@
    <NumberFormat/>
    <Protection/>
   </Style>
+  <Style ss:ID="s63" ss:Name="Hyperlinkki">
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Color="#0000FF"
+    ss:Underline="Single"/>
+  </Style>
   <Style ss:ID="s62">
    <Alignment ss:Horizontal="Left" ss:Vertical="Top" ss:WrapText="1"/>
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
   </Style>
+  <Style ss:ID="s74">
+   <Alignment ss:Vertical="Center"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
+  <Style ss:ID="s78">
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="12" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s79">
+   <Alignment ss:Vertical="Center"/>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="16" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s80">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="12" ss:Bold="1"/>
+  </Style>
+  <Style ss:ID="s81">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+  </Style>
+  <Style ss:ID="s83">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Top" ss:WrapText="1"/>
+   <NumberFormat ss:Format="@"/>
+  </Style>
  </Styles>
- <Worksheet ss:Name="allQueryResults">
+ <Worksheet ss:Name="Tulokset">
   <Names>
-   <NamedRange ss:Name="_FilterDatabase" ss:RefersTo="=allQueryResults!R1C1:R1C16"
+   <NamedRange ss:Name="_FilterDatabase" ss:RefersTo="=Tulokset!R1C1:R1C16"
     ss:Hidden="1"/>
   </Names>
   <Table ss:ExpandedColumnCount="16" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="13"><xsl:attribute name="ss:ExpandedRowCount"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result)+1"/></xsl:attribute>
    <Column ss:AutoFitWidth="0" ss:Width="45"/>
    <Column ss:Width="198.75"/>
-   <Column ss:AutoFitWidth="0" ss:Width="103"/>
-   <Column ss:AutoFitWidth="0" ss:Width="45"/>
-   <Column ss:AutoFitWidth="0" ss:Width="45"/>
-   <Column ss:AutoFitWidth="0" ss:Width="33.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="90"/>
+   <Column ss:AutoFitWidth="0" ss:Width="56.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="56.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="37.5"/>
    <Column ss:Hidden="1" ss:AutoFitWidth="0" ss:Width="274.75"/>
    <Column ss:AutoFitWidth="0" ss:Width="100"/>
    <Column ss:Hidden="1" ss:AutoFitWidth="0" ss:Width="54.25"/>
    <Column ss:AutoFitWidth="0" ss:Width="113.25"/>
-   <Column ss:AutoFitWidth="0" ss:Width="45"/>
-   <Column ss:AutoFitWidth="0" ss:Width="45"/>
+   <Column ss:AutoFitWidth="0" ss:Width="46.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="46.5"/>
    <Column ss:Hidden="1" ss:AutoFitWidth="0" ss:Width="110"/>
    <Column ss:AutoFitWidth="0" ss:Width="650"/>
    <Column ss:AutoFitWidth="0" ss:Width="90"/>
@@ -280,7 +306,7 @@
        xmlns="http://www.w3.org/TR/REC-html40"><Font html:Face="Tahoma"
         x:Family="Swiss" html:Size="9" html:Color="#000000">erikoisontologian käsitteen prefLabel </Font></ss:Data></Comment><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
-    <Cell><Data ss:Type="String">Erikoisontologian käsitteen URI-linkki </Data><NamedCell
+    <Cell><Data ss:Type="String"> Linkki erikoisontologian käsitteeseen</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
     <Cell><Data ss:Type="String">Erikoisontologian käsitteen lkm nyt</Data><Comment><ss:Data
        xmlns="http://www.w3.org/TR/REC-html40"><Font html:Face="Tahoma"
@@ -304,7 +330,7 @@
        xmlns="http://www.w3.org/TR/REC-html40"><Font html:Face="Tahoma"
         x:Family="Swiss" html:Size="9" html:Color="#000000"> onko muutos tapahtunut YSOn ja erikoisontologian liityntäkohdassa (kyllä/ei) </Font></ss:Data></Comment><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
-    <Cell><Data ss:Type="String">Termi erikoisontologian YSOssa</Data><Comment><ss:Data
+    <Cell><Data ss:Type="String">Termi erikoisontologian vanhassa YSOssa</Data><Comment><ss:Data
        xmlns="http://www.w3.org/TR/REC-html40"><Font html:Face="Tahoma"
         x:Family="Swiss" html:Size="9" html:Color="#000000">YSO-käsitteen prefLabel siinä YSO-versiossa, joka sisältyy erikoisontologiaan</Font></ss:Data></Comment><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
@@ -364,6 +390,99 @@
   <AutoFilter x:Range="R1C1:R1C16"
    xmlns="urn:schemas-microsoft-com:office:excel">
   </AutoFilter>
+ </Worksheet>
+ <Worksheet ss:Name="Ohje">
+  <Table ss:ExpandedColumnCount="6" ss:ExpandedRowCount="13" x:FullColumns="1"
+   x:FullRows="1">
+   <Column ss:AutoFitWidth="0" ss:Width="31.5"/>
+   <Column ss:AutoFitWidth="0" ss:Width="125.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="51.75"/>
+   <Column ss:AutoFitWidth="0" ss:Width="60"/>
+   <Column ss:AutoFitWidth="0" ss:Width="461.25"/>
+   <Column ss:AutoFitWidth="0" ss:Width="52.5"/>
+   <Row ss:Index="2" ss:AutoFitHeight="0" ss:Height="24">
+    <Cell ss:Index="4" ss:StyleID="s79"><Data ss:Type="String">Ohje:</Data></Cell>
+    <Cell ss:StyleID="s74"><Data ss:Type="String" x:Ticked="1">Tarkemmat ohjeet löytyvät Kansalliskirjaston Kiwi-sivustolta:</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="5" ss:StyleID="s63" ss:HRef="https://www.kiwi.fi/"><Data
+      ss:Type="String">https://www.kiwi.fi/</Data></Cell>
+   </Row>
+   <Row ss:Index="5" ss:AutoFitHeight="0" ss:Height="140.25">
+    <Cell ss:Index="5" ss:StyleID="s83"><Data ss:Type="String">Jokainen tulostaulukon rivi raportoi yhden muutoksen vanhaan erikoisontologiaan liitetyn YSOn ja uuden vertaillun YSOn välillä. Tämän muutostaulukon tekemisen jälkeen täytyy erikoisontologian ja vanhan YSO-version liitos purkaa ja vaihtaa uuteen YSO-versioon. Kun sinulla on käytössäsi erikoisontologia, johon on vaihdettu uusi YSO, käy taulukon jokainen rivi läpi ja muuta erikoisontologiaa tarvittaessa. Kun taulukossa raportoitu muutos (rivi) on käsitelty, niin muutosta kuvaava rivi täytyy poistaa taulukosta käsittelyn merkiksi. Tulostaulukon rivejä voi järjestää eri sarakkeiden mukaan ja tarkastella muutoksia näin ryhminä ja mahdollisesti käsitellä useita muutoksia kerralla. Erityisen hyödyllistä voi olla järjestää taulukko liittyvän YSO-käsitteen tunnuksen eli linkki erikoisontologian YSO-käsitteeseen sarakkeen (ja mahdollisesti muutostyypin) mukaan. Näin voi nähdä mihin kaikkiin erikoisontologian käsitteisiin yksi tietty YSO-käsitteessä tapahtunut muutos vaikuttaa ja käsitellä ne kerralla (poistaa rivit) , jos muutos ei aiheuta toimenpiteitä erikoisontologian käsitteisiin.</Data></Cell>
+   </Row>
+   <Row ss:Index="7" ss:Height="15.75">
+    <Cell ss:Index="2" ss:StyleID="s80"><Data ss:Type="String">Muutostyypin tunnus</Data></Cell>
+    <Cell ss:StyleID="s80"><Data ss:Type="String">Jäljellä</Data></Cell>
+    <Cell ss:StyleID="s80"><Data ss:Type="String">Käsitelty</Data></Cell>
+    <Cell ss:StyleID="s78"><Data ss:Type="String">Kuvaus</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2" ss:StyleID="s81"><Data ss:Type="String">1.1</Data></Cell>
+    <Cell ss:StyleID="s81" ss:Formula="=COUNTIF(Tulokset!C[-2],RC[-1])"><Data
+      ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='1.1'])"/></Data></Cell>
+    <Cell ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='1.1'])}-COUNTIF(Tulokset!C[-3],RC[-2])"><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">Uudella YSO käsitteellä on sama prefLabel kuin erikoisontologian käsitteellä</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2" ss:StyleID="s81"><Data ss:Type="String">2.1</Data></Cell>
+    <Cell ss:StyleID="s81" ss:Formula="=COUNTIF(Tulokset!C[-2],RC[-1])"><Data
+      ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='2.1'])"/></Data></Cell>
+    <Cell ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='2.1'])}-COUNTIF(Tulokset!C[-3],RC[-2])"><Data ss:Type="Number">0</Data></Cell>
+    <Cell><Data ss:Type="String" x:Ticked="1">YSO käsitteellä on uusi prefLabel, joka on sama kuin erikoisontologian käsitteellä</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2" ss:StyleID="s81"><Data ss:Type="String">2.2</Data></Cell>
+    <Cell ss:StyleID="s81" ss:Formula="=COUNTIF(Tulokset!C[-2],RC[-1])"><Data
+      ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='2.2'])"/></Data></Cell>
+    <Cell ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='2.2'])}-COUNTIF(Tulokset!C[-3],RC[-2])"><Data ss:Type="Number">0</Data></Cell>
+    <Cell><Data ss:Type="String">Liittyvän YSO käsitteen prefLabel on muuttunut</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2" ss:StyleID="s81"><Data ss:Type="String">3.1</Data></Cell>
+    <Cell ss:StyleID="s81" ss:Formula="=COUNTIF(Tulokset!C[-2],RC[-1])"><Data
+      ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3.1'])"/></Data></Cell>
+    <Cell ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3.1'])}-COUNTIF(Tulokset!C[-3],RC[-2])"><Data ss:Type="Number">0</Data></Cell>
+    <Cell><Data ss:Type="String" x:Ticked="1">Liittyvällä YSO käsitteellä on uusi yläkäsite</Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2" ss:StyleID="s81"><Data ss:Type="String">3.2</Data></Cell>
+    <Cell ss:StyleID="s81" ss:Formula="=COUNTIF(Tulokset!C[-2],RC[-1])"><Data
+      ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3.2'])"/></Data></Cell>
+    <Cell ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3.2'])}-COUNTIF(Tulokset!C[-3],RC[-2])"><Data ss:Type="Number">0</Data></Cell>
+    <Cell><Data ss:Type="String">Liittyvältä YSO käsitteeltä on poistunut yläkäsite </Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2" ss:StyleID="s81"><Data ss:Type="String">3.3</Data></Cell>
+    <Cell ss:StyleID="s81" ss:Formula="=COUNTIF(Tulokset!C[-2],RC[-1])"><Data
+      ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3.3'])"/></Data></Cell>
+    <Cell ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3.3'])}-COUNTIF(Tulokset!C[-3],RC[-2])"><Data ss:Type="Number">0</Data></Cell>
+    <Cell><Data ss:Type="String" x:Ticked="1">Liittyvällä YSO käsitteellä on yläkäsite, joka on deprekoitu uudessa YSOssa</Data></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Print>
+    <ValidPrinterInfo/>
+    <PaperSizeIndex>9</PaperSizeIndex>
+    <HorizontalResolution>600</HorizontalResolution>
+    <VerticalResolution>600</VerticalResolution>
+   </Print>
+   <Selected/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>13</ActiveRow>
+     <ActiveCol>4</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
  </Worksheet>
 </Workbook>
   </xsl:template>

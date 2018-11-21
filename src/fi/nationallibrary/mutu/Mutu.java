@@ -863,6 +863,14 @@ public class Mutu {
 				System.exit(0);
 			}
 		}
+		
+		if (cmd.hasOption("fintoName")) {
+			setFintoName(cmd.getOptionValue("fintoName"));
+		}else {
+			System.out.println("\n!! fintoName is a required argument\n");
+			formatter.printHelp("mutu", header, allOptions, footer, true);
+			System.exit(-1);
+		}
 
 		// Read files for the special ontology
 		domainOntStrArr = cmd.getOptionValues("domainOnt");
@@ -897,10 +905,6 @@ public class Mutu {
 
 		if (cmd.hasOption("lang")) {
 			setLang(cmd.getOptionValue("lang"));
-		}
-
-		if (cmd.hasOption("fintoName")) {
-			setFintoName(cmd.getOptionValue("fintoName"));
 		}
 
 		if (cmd.hasOption("query")) {

@@ -276,12 +276,14 @@
  </Styles>
  <Worksheet ss:Name="Tulokset">
   <Names>
-   <NamedRange ss:Name="_FilterDatabase" ss:RefersTo="=Tulokset!R1C1:R1C16"
+   <NamedRange ss:Name="_FilterDatabase" ss:RefersTo="=Tulokset!R1C1:R1C18"
     ss:Hidden="1"/>
   </Names>
-  <Table ss:ExpandedColumnCount="16" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="18" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="13"><xsl:attribute name="ss:ExpandedRowCount"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result)+1"/></xsl:attribute>
    <Column ss:AutoFitWidth="0" ss:Width="45"/>
+   <Column ss:AutoFitWidth="0" ss:Width="35"/>
+   <Column ss:AutoFitWidth="0" ss:Width="35"/>
    <Column ss:Width="198.75"/>
    <Column ss:AutoFitWidth="0" ss:Width="90"/>
    <Column ss:AutoFitWidth="0" ss:Width="56.25"/>
@@ -298,9 +300,17 @@
    <Column ss:AutoFitWidth="0" ss:Width="90"/>
    <Column ss:AutoFitWidth="0" ss:Width="65"/>
    <Row ss:AutoFitHeight="0" ss:Height="54" ss:StyleID="s62">
-    <Cell><Data ss:Type="String">Muutos-tyypin tunnus</Data><Comment><ss:Data
+    <Cell><Data ss:Type="String">Muutos-&#10;tyypin &#10;tunnus</Data><Comment><ss:Data
        xmlns="http://www.w3.org/TR/REC-html40"><Font html:Face="Tahoma"
         x:Family="Swiss" html:Size="9" html:Color="#000000">YSOssa tapahtuneen muutostyypin tunnus. Muutos on kuvattu tarkemmin sarakkeessa &quot;YSOssa tapahtuneen muutoksen kuvaus&quot;. </Font></ss:Data></Comment><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+    <Cell><Data ss:Type="String">Pää-&#10;tyyppi</Data><Comment><ss:Data
+       xmlns="http://www.w3.org/TR/REC-html40"><Font html:Face="Tahoma"
+        x:Family="Swiss" html:Size="9" html:Color="#000000">YSOssa tapahtuneen muutostyypin päätyyppi lajittelua varten. </Font></ss:Data></Comment><NamedCell
+      ss:Name="_FilterDatabase"/></Cell>
+    <Cell><Data ss:Type="String">Ali-&#10;tyyppi</Data><Comment><ss:Data
+       xmlns="http://www.w3.org/TR/REC-html40"><Font html:Face="Tahoma"
+        x:Family="Swiss" html:Size="9" html:Color="#000000">YSOssa tapahtuneen muutostyypin alityyppi lajittelua varten. </Font></ss:Data></Comment><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
     <Cell><Data ss:Type="String">Termi erikoisontologiassa</Data><Comment><ss:Data
        xmlns="http://www.w3.org/TR/REC-html40"><Font html:Face="Tahoma"
@@ -387,7 +397,7 @@
    <ProtectObjects>False</ProtectObjects>
    <ProtectScenarios>False</ProtectScenarios>
   </WorksheetOptions>
-  <AutoFilter x:Range="R1C1:R1C16"
+  <AutoFilter x:Range="R1C1:R1C18"
    xmlns="urn:schemas-microsoft-com:office:excel">
   </AutoFilter>
  </Worksheet>
@@ -492,6 +502,7 @@
   
   <xsl:template match="sparqlResults:result">
     <xsl:variable name="queryType" select="sparqlResults:binding[@name='queryType']/*[1]"/>
+    <xsl:variable name="querySubType" select="sparqlResults:binding[@name='querySubType']/*[1]"/>
     <xsl:variable name="domainC" select="sparqlResults:binding[@name='domainC']/*[1]"/>
     <xsl:variable name="nroSubConcepts" select="sparqlResults:binding[@name='nroSubConcepts']/*[1]"/>
     <xsl:variable name="domainCShort" select="translate(substring-after(string($domainC),'http://www.yso.fi/onto/'),'/',':')"/>
@@ -509,7 +520,9 @@
 	<xsl:variable name="currentRow" select="position()"/>
 	
    <Row xmlns="urn:schemas-microsoft-com:office:spreadsheet">
+    <Cell><Data ss:Type="String"><xsl:value-of select="concat($queryType,'.',$querySubType)"/></Data></Cell>
     <Cell><Data ss:Type="String"><xsl:value-of select="$queryType"/></Data></Cell>
+    <Cell><Data ss:Type="String"><xsl:value-of select="$querySubType"/></Data></Cell>
     <Cell><Data ss:Type="String"><xsl:value-of select="$domainCpref"/></Data></Cell>
     <Cell ss:HRef="{$domainC}">
 	 <Data ss:Type="String"><xsl:value-of select="$domainCShort"/></Data>
@@ -522,7 +535,7 @@
 		<Cell><Data ss:Type="String"><xsl:value-of select="$domainCtypes"/></Data></Cell>
       </xsl:when>
 	  <xsl:otherwise>
-        <Cell ss:Index="7"><Data ss:Type="String"><xsl:value-of select="$domainCtypes"/></Data></Cell>
+        <Cell ss:Index="9"><Data ss:Type="String"><xsl:value-of select="$domainCtypes"/></Data></Cell>
       </xsl:otherwise>
 	</xsl:choose>
     <Cell><Data ss:Type="String"><xsl:value-of select="$relationType"/></Data></Cell>

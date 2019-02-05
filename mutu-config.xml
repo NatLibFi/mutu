@@ -84,7 +84,7 @@ Every query must contain one description an one query. Developer remarks can be 
 <sparql><![CDATA[
 # 1-same-pref.rq
 #prefLabel same
-SELECT DISTINCT ('1.1' AS ?queryType) ?domainC ?nroSubConcepts ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
+SELECT DISTINCT ('1' AS ?queryType) ('1' AS ?querySubType) ?domainC ?nroSubConcepts ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
 WHERE {
   GRAPH ?anyNamedGraph {
     {*yso-concept-selector-query*} .
@@ -110,7 +110,7 @@ WHERE {
 <note>To reduce duplicate results, this query returns only domain ontology concepts which are directly connected to YSO. Remember to check their the sub concepts!!.</note>
 <sparql><![CDATA[
 # 2-diff-broad-pref.rq
-SELECT DISTINCT ('2.1' AS ?queryType) ?domainC ?nroSubConcepts ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
+SELECT DISTINCT ('2' AS ?queryType) ('1' AS ?querySubType)  ?domainC ?nroSubConcepts ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
 WHERE {
    
   GRAPH ?anyNamedGraph {
@@ -140,7 +140,7 @@ WHERE {
 <note>To reduce duplicate results, this query returns only domain ontology concepts which are directly connected to YSO. Remember to check their the sub concepts!!.</note>
 <sparql><![CDATA[
 # 2-diff-broad-pref.rq
-SELECT DISTINCT ('2.2' AS ?queryType) ?domainC ?nroSubConcepts ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
+SELECT DISTINCT ('2' AS ?queryType) ('2' AS ?querySubType)  ?domainC ?nroSubConcepts ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
 WHERE {
   {*domain-concept-selector-query*}
   ?domainC rdfs:subClassOf|owl:equivalentClass|owl:equivalentClass/rdfs:subClassOf ?ysoCinterface .
@@ -190,10 +190,10 @@ WHERE {
 <note>remember to check the subClasses of the domain concept, which are not directly connected to YSO themselves </note>
 <sparql><![CDATA[
 #  	3-diff-broader.rq
-SELECT DISTINCT ?queryType ?domainC ?nroSubConcepts ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
+SELECT DISTINCT ?queryType ?querySubType ?domainC ?nroSubConcepts ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
 WHERE{
 {
-SELECT DISTINCT ('3.1' AS ?queryType) ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
+SELECT DISTINCT ('3' AS ?queryType) ('1' AS ?querySubType)  ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
 WHERE {
   {*domain-concept-selector-query*}
   ?domainC rdfs:subClassOf|owl:equivalentClass ?ysoCinterface .
@@ -248,7 +248,7 @@ WHERE {
 } UNION {
 
 {
-SELECT DISTINCT ('3.2' AS ?queryType) ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
+SELECT DISTINCT ('3' AS ?queryType) ('2' AS ?querySubType)  ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
 WHERE {
   {*domain-concept-selector-query*}
   
@@ -300,7 +300,7 @@ WHERE {
 }UNION {
 
 {
-SELECT DISTINCT ('3.3' AS ?queryType) ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
+SELECT DISTINCT ('3' AS ?queryType) ('3' AS ?querySubType) ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
 WHERE {
   {*domain-concept-selector-query*}
   

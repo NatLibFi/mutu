@@ -300,7 +300,7 @@ WHERE {
 }UNION {
 
 {
-SELECT DISTINCT ('3' AS ?queryType) ('3' AS ?querySubType) ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
+SELECT DISTINCT ?queryType ?querySubType ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
 WHERE {
   {*domain-concept-selector-query*}
   
@@ -347,10 +347,13 @@ WHERE {
           ) 
 	   AS ?relationType).
   
+  BIND(IF(?ysoCinterface = ?ysoC2, "3" , "3") AS ?queryType) .
+  BIND(IF(?ysoCinterface = ?ysoC2, "4" , "3") AS ?querySubType) . 
   BIND(IF(?ysoCinterface = ?ysoC2,
           concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") käsite on deprekoitu uudessa YSOssa"),
           concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") käsitteellä on yläkäsite '",?ysoC2pref, "' (yso:",substr(str(?ysoC2),28) ,"), joka on deprekoitu uudessa YSOssa")
           ) AS ?changeDescription)
+		  
   
   } 
 }

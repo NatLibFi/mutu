@@ -304,7 +304,7 @@
       ss:Name="_FilterDatabase"/></Cell>
     <Cell><Data ss:Type="String">Termi erikoisontologiassa</Data><Comment><ss:Data
        xmlns="http://www.w3.org/TR/REC-html40"><Font html:Face="Tahoma"
-        x:Family="Swiss" html:Size="9" html:Color="#000000">erikoisontologian käsitteen prefLabel </Font></ss:Data></Comment><NamedCell
+        x:Family="Swiss" html:Size="9" html:Color="#000000">erikoisontologian käsitteen käytettävä termi</Font></ss:Data></Comment><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
     <Cell><Data ss:Type="String"> Linkki erikoisontologian käsitteeseen</Data><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
@@ -332,7 +332,7 @@
       ss:Name="_FilterDatabase"/></Cell>
     <Cell><Data ss:Type="String">Termi erikoisontologian vanhassa YSOssa</Data><Comment><ss:Data
        xmlns="http://www.w3.org/TR/REC-html40"><Font html:Face="Tahoma"
-        x:Family="Swiss" html:Size="9" html:Color="#000000">YSO-käsitteen prefLabel siinä YSO-versiossa, joka sisältyy erikoisontologiaan</Font></ss:Data></Comment><NamedCell
+        x:Family="Swiss" html:Size="9" html:Color="#000000">YSO-käsitteen käytettävä termi siinä YSO-versiossa, joka sisältyy erikoisontologiaan</Font></ss:Data></Comment><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
     <Cell><Data ss:Type="String">YSO-käsitteen lkm nyt</Data><Comment><ss:Data
        xmlns="http://www.w3.org/TR/REC-html40"><Font html:Face="Tahoma"
@@ -422,21 +422,21 @@
     <Cell ss:StyleID="s81" ss:Formula="=COUNTIF(Tulokset!C[-2],RC[-1])"><Data
       ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='1.1'])"/></Data></Cell>
     <Cell ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='1.1'])}-COUNTIF(Tulokset!C[-3],RC[-2])"><Data ss:Type="Number">1</Data></Cell>
-    <Cell><Data ss:Type="String">Uudella YSO käsitteellä on sama prefLabel kuin erikoisontologian käsitteellä</Data></Cell>
+    <Cell><Data ss:Type="String">Uudella YSO käsitteellä on sama käytettävä termi kuin erikoisontologian käsitteellä</Data></Cell>
    </Row>
    <Row>
     <Cell ss:Index="2" ss:StyleID="s81"><Data ss:Type="String">2.1</Data></Cell>
     <Cell ss:StyleID="s81" ss:Formula="=COUNTIF(Tulokset!C[-2],RC[-1])"><Data
       ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='2.1'])"/></Data></Cell>
     <Cell ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='2.1'])}-COUNTIF(Tulokset!C[-3],RC[-2])"><Data ss:Type="Number">0</Data></Cell>
-    <Cell><Data ss:Type="String" x:Ticked="1">YSO käsitteellä on uusi prefLabel, joka on sama kuin erikoisontologian käsitteellä</Data></Cell>
+    <Cell><Data ss:Type="String" x:Ticked="1">YSO käsitteellä on uusi käytettävä termi, joka on sama kuin erikoisontologian käsitteellä</Data></Cell>
    </Row>
    <Row>
     <Cell ss:Index="2" ss:StyleID="s81"><Data ss:Type="String">2.2</Data></Cell>
     <Cell ss:StyleID="s81" ss:Formula="=COUNTIF(Tulokset!C[-2],RC[-1])"><Data
       ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='2.2'])"/></Data></Cell>
     <Cell ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='2.2'])}-COUNTIF(Tulokset!C[-3],RC[-2])"><Data ss:Type="Number">0</Data></Cell>
-    <Cell><Data ss:Type="String">Liittyvän YSO käsitteen prefLabel on muuttunut</Data></Cell>
+    <Cell><Data ss:Type="String">Liittyvän YSO käsitteen käytettävä termi on muuttunut</Data></Cell>
    </Row>
    <Row>
     <Cell ss:Index="2" ss:StyleID="s81"><Data ss:Type="String">3.1</Data></Cell>
@@ -457,7 +457,7 @@
     <Cell ss:StyleID="s81" ss:Formula="=COUNTIF(Tulokset!C[-2],RC[-1])"><Data
       ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3.3'])"/></Data></Cell>
     <Cell ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3.3'])}-COUNTIF(Tulokset!C[-3],RC[-2])"><Data ss:Type="Number">0</Data></Cell>
-    <Cell><Data ss:Type="String" x:Ticked="1">Liittyvällä YSO käsitteellä on yläkäsite, joka on deprekoitu uudessa YSOssa</Data></Cell>
+    <Cell><Data ss:Type="String" x:Ticked="1">Liittyvällä YSO käsitteellä on yläkäsite, joka on poistettu käytöstä uudessa YSOssa</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -527,13 +527,15 @@
 	</xsl:choose>
     <Cell><Data ss:Type="String"><xsl:value-of select="$relationType"/></Data></Cell>
     <Cell><Data ss:Type="String"><xsl:value-of select="$interface"/></Data></Cell>
-    <Cell><Data ss:Type="String"><xsl:value-of select="$ysoCpref"/></Data></Cell>
+	
+	<!-- If queryType is 1.1 do not print prefLabel as it is not in the old YSO of the special ontology, same for link-->
+    <Cell><Data ss:Type="String"><xsl:if test="$queryType!='1.1'"><xsl:value-of select="$ysoCpref"/></xsl:if></Data></Cell>
 	<Cell ss:Formula="=COUNTIF(R2C[4]:R{$countRows+1}C[4],RC[4])"><Data ss:Type="Number"><xsl:value-of select="$countYsoC"/></Data></Cell>
 	<Cell><Data ss:Type="Number"><xsl:value-of select="$countYsoC"/></Data></Cell>
     <Cell><Data ss:Type="String"><xsl:value-of select="$ysoCtypes"/></Data></Cell>
     <Cell><Data ss:Type="String"><xsl:value-of select="$changeDescription"/></Data></Cell>
     <Cell ss:HRef="http://finto.fi/{$fintoName}/fi/page/?uri={$ysoC}">
-          <Data ss:Type="String"><xsl:value-of select="$ysoCShort"/></Data></Cell>
+          <Data ss:Type="String"><xsl:if test="$queryType!='1.1'"><xsl:value-of select="$ysoCShort"/></xsl:if></Data></Cell>
 	<Cell ss:HRef="{$ysoC}">
      <Data ss:Type="String"><xsl:value-of select="$ysoCShort"/></Data></Cell>
    </Row>

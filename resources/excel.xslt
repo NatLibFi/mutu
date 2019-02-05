@@ -521,8 +521,8 @@
 	
    <Row xmlns="urn:schemas-microsoft-com:office:spreadsheet">
     <Cell><Data ss:Type="String"><xsl:value-of select="concat($queryType,'.',$querySubType)"/></Data></Cell>
-    <Cell><Data ss:Type="String"><xsl:value-of select="$queryType"/></Data></Cell>
-    <Cell><Data ss:Type="String"><xsl:value-of select="$querySubType"/></Data></Cell>
+    <Cell><Data ss:Type="Number"><xsl:value-of select="$queryType"/></Data></Cell>
+    <Cell><Data ss:Type="Number"><xsl:value-of select="$querySubType"/></Data></Cell>
     <Cell><Data ss:Type="String"><xsl:value-of select="$domainCpref"/></Data></Cell>
     <Cell ss:HRef="{$domainC}">
 	 <Data ss:Type="String"><xsl:value-of select="$domainCShort"/></Data>

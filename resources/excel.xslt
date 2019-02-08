@@ -255,6 +255,10 @@
    <Alignment ss:Vertical="Center"/>
    <NumberFormat ss:Format="@"/>
   </Style>
+  <Style ss:ID="s76">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Top"/>
+   <Font ss:FontName="Arial" x:Family="Swiss" ss:Bold="1"/>
+  </Style>
   <Style ss:ID="s78">
    <Font ss:FontName="Arial" x:Family="Swiss" ss:Size="12" ss:Bold="1"/>
   </Style>
@@ -271,7 +275,6 @@
   </Style>
   <Style ss:ID="s83">
    <Alignment ss:Horizontal="Left" ss:Vertical="Top" ss:WrapText="1"/>
-   <NumberFormat ss:Format="@"/>
   </Style>
  </Styles>
  <Worksheet ss:Name="Tulokset">
@@ -300,15 +303,15 @@
    <Column ss:AutoFitWidth="0" ss:Width="90"/>
    <Column ss:AutoFitWidth="0" ss:Width="65"/>
    <Row ss:AutoFitHeight="0" ss:Height="54" ss:StyleID="s62">
-    <Cell><Data ss:Type="String">Muutos-&#10;tyypin &#10;tunnus</Data><Comment><ss:Data
+    <Cell><Data ss:Type="String">Muutos-<xsl:text disable-output-escaping="yes"><![CDATA[&#10;]]></xsl:text>tyypin <xsl:text disable-output-escaping="yes"><![CDATA[&#10;]]></xsl:text>tunnus</Data><Comment><ss:Data
        xmlns="http://www.w3.org/TR/REC-html40"><Font html:Face="Tahoma"
         x:Family="Swiss" html:Size="9" html:Color="#000000">YSOssa tapahtuneen muutostyypin tunnus. Muutos on kuvattu tarkemmin sarakkeessa &quot;YSOssa tapahtuneen muutoksen kuvaus&quot;. </Font></ss:Data></Comment><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
-    <Cell><Data ss:Type="String">Pää-&#10;tyyppi</Data><Comment><ss:Data
+    <Cell><Data ss:Type="String">Pää-<xsl:text disable-output-escaping="yes"><![CDATA[&#10;]]></xsl:text>tyyppi</Data><Comment><ss:Data
        xmlns="http://www.w3.org/TR/REC-html40"><Font html:Face="Tahoma"
         x:Family="Swiss" html:Size="9" html:Color="#000000">YSOssa tapahtuneen muutostyypin päätyyppi lajittelua varten. </Font></ss:Data></Comment><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
-    <Cell><Data ss:Type="String">Ali-&#10;tyyppi</Data><Comment><ss:Data
+    <Cell><Data ss:Type="String">Ali-<xsl:text disable-output-escaping="yes"><![CDATA[&#10;]]></xsl:text>tyyppi</Data><Comment><ss:Data
        xmlns="http://www.w3.org/TR/REC-html40"><Font html:Face="Tahoma"
         x:Family="Swiss" html:Size="9" html:Color="#000000">YSOssa tapahtuneen muutostyypin alityyppi lajittelua varten. </Font></ss:Data></Comment><NamedCell
       ss:Name="_FilterDatabase"/></Cell>
@@ -402,7 +405,7 @@
   </AutoFilter>
  </Worksheet>
  <Worksheet ss:Name="Ohje">
-  <Table ss:ExpandedColumnCount="6" ss:ExpandedRowCount="13" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="6" ss:ExpandedRowCount="14" x:FullColumns="1"
    x:FullRows="1">
    <Column ss:AutoFitWidth="0" ss:Width="31.5"/>
    <Column ss:AutoFitWidth="0" ss:Width="125.25"/>
@@ -428,46 +431,53 @@
     <Cell ss:StyleID="s78"><Data ss:Type="String">Kuvaus</Data></Cell>
    </Row>
    <Row>
-    <Cell ss:Index="2" ss:StyleID="s81"><Data ss:Type="String">1.1</Data></Cell>
-    <Cell ss:StyleID="s81" ss:Formula="=COUNTIF(Tulokset!C[-2],RC[-1])"><Data
-      ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='1.1'])"/></Data></Cell>
-    <Cell ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='1.1'])}-COUNTIF(Tulokset!C[-3],RC[-2])"><Data ss:Type="Number">1</Data></Cell>
-    <Cell><Data ss:Type="String">Uudella YSO käsitteellä on sama käytettävä termi kuin erikoisontologian käsitteellä</Data></Cell>
+    <Cell ss:Index="2" ss:StyleID="s76"><Data ss:Type="String">1.1</Data></Cell>
+    <Cell ss:StyleID="s76" ss:Formula="=COUNTIF(Tulokset!C1,RC[-1])"><Data
+      ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='1' and sparqlResults:binding[@name='querySubType']/*[1]='1'])"/></Data></Cell>
+    <Cell ss:StyleID="s76"  ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='1' and sparqlResults:binding[@name='querySubType']/*[1]='1'])}-COUNTIF(Tulokset!C1,RC[-2])"><Data ss:Type="Number">1</Data></Cell>
+    <Cell ss:StyleID="s83"><ss:Data ss:Type="String" xmlns="http://www.w3.org/TR/REC-html40"><B>Uudella YSO käsitteellä on sama käytettävä termi kuin erikoisontologian käsitteellä</B> <xsl:text disable-output-escaping="yes"><![CDATA[&#10;]]></xsl:text>Toimenpide: Tarkista onko uusi YSO-käsite merkitykseltään sama kuin erikoisontologian samanniminen käsite. <xsl:text disable-output-escaping="yes"><![CDATA[&#10;]]></xsl:text>* Jos käsite on sama, näiden välille merkitään ekvivalenssi. <xsl:text disable-output-escaping="yes"><![CDATA[&#10;]]></xsl:text>* Jos käsite ei ole sama, erikoisontologian käsitteelle lisätään merkitystä selventävä sulkutarkenne.</ss:Data></Cell>
    </Row>
    <Row>
-    <Cell ss:Index="2" ss:StyleID="s81"><Data ss:Type="String">2.1</Data></Cell>
-    <Cell ss:StyleID="s81" ss:Formula="=COUNTIF(Tulokset!C[-2],RC[-1])"><Data
-      ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='2.1'])"/></Data></Cell>
-    <Cell ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='2.1'])}-COUNTIF(Tulokset!C[-3],RC[-2])"><Data ss:Type="Number">0</Data></Cell>
-    <Cell><Data ss:Type="String" x:Ticked="1">YSO käsitteellä on uusi käytettävä termi, joka on sama kuin erikoisontologian käsitteellä</Data></Cell>
+    <Cell ss:Index="2" ss:StyleID="s76"><Data ss:Type="String">2.1</Data></Cell>
+    <Cell ss:StyleID="s76" ss:Formula="=COUNTIF(Tulokset!C1,RC[-1])"><Data
+      ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='2' and sparqlResults:binding[@name='querySubType']/*[1]='1'])"/></Data></Cell>
+    <Cell ss:StyleID="s76"  ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='2' and sparqlResults:binding[@name='querySubType']/*[1]='1'])}-COUNTIF(Tulokset!C1,RC[-2])"><Data ss:Type="Number">0</Data></Cell>
+    <Cell ss:StyleID="s83"><ss:Data ss:Type="String" x:Ticked="1" xmlns="http://www.w3.org/TR/REC-html40"><B>YSO käsitteellä on uusi käytettävä termi, joka on sama kuin erikoisontologian käsitteellä</B> <xsl:text disable-output-escaping="yes"><![CDATA[&#10;]]></xsl:text>Toimenpide: Tarkista onko uuden käytettävän termin saanut YSO-käsite merkitykseltään sama kuin erikoisontologian samanniminen käsite. <xsl:text disable-output-escaping="yes"><![CDATA[&#10;]]></xsl:text>* Jos käsite on sama, näiden välille merkitään ekvivalenssi. <xsl:text disable-output-escaping="yes"><![CDATA[&#10;]]></xsl:text>* Jos käsite ei ole sama, erikoisontologian käsitteelle lisätään merkitystä selventävä sulkutarkenne.</ss:Data></Cell>
    </Row>
    <Row>
-    <Cell ss:Index="2" ss:StyleID="s81"><Data ss:Type="String">2.2</Data></Cell>
-    <Cell ss:StyleID="s81" ss:Formula="=COUNTIF(Tulokset!C[-2],RC[-1])"><Data
-      ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='2.2'])"/></Data></Cell>
-    <Cell ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='2.2'])}-COUNTIF(Tulokset!C[-3],RC[-2])"><Data ss:Type="Number">0</Data></Cell>
-    <Cell><Data ss:Type="String">Liittyvän YSO käsitteen käytettävä termi on muuttunut</Data></Cell>
+    <Cell ss:Index="2" ss:StyleID="s76"><Data ss:Type="String">2.2</Data></Cell>
+    <Cell ss:StyleID="s76" ss:Formula="=COUNTIF(Tulokset!C1,RC[-1])"><Data
+      ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='2' and sparqlResults:binding[@name='querySubType']/*[1]='2'])"/></Data></Cell>
+    <Cell ss:StyleID="s76"  ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='2' and sparqlResults:binding[@name='querySubType']/*[1]='2'])}-COUNTIF(Tulokset!C1,RC[-2])"><Data ss:Type="Number">0</Data></Cell>
+    <Cell ss:StyleID="s83"><ss:Data ss:Type="String" xmlns="http://www.w3.org/TR/REC-html40"><B>Liittyvän YSO käsitteen käytettävä termi on muuttunut</B> <xsl:text disable-output-escaping="yes"><![CDATA[&#10;]]></xsl:text>Toimenpide: Tarkista päteekö erikoisontologian käsitteen ja YSO-käsitteen suhde (ekvivalenssi tai yläkäsitesuhde) myös muutoksen jälkeen. <xsl:text disable-output-escaping="yes"><![CDATA[&#10;]]></xsl:text>* Jos suhde ei enää päde, se puretaan ja erikoisontologian käsite hierakisoidaan tarvittaessa uudelleen. <xsl:text disable-output-escaping="yes"><![CDATA[&#10;]]></xsl:text>* Jos suhde pätee, muutoksia ei tarvita.</ss:Data></Cell>
    </Row>
    <Row>
-    <Cell ss:Index="2" ss:StyleID="s81"><Data ss:Type="String">3.1</Data></Cell>
-    <Cell ss:StyleID="s81" ss:Formula="=COUNTIF(Tulokset!C[-2],RC[-1])"><Data
-      ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3.1'])"/></Data></Cell>
-    <Cell ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3.1'])}-COUNTIF(Tulokset!C[-3],RC[-2])"><Data ss:Type="Number">0</Data></Cell>
-    <Cell><Data ss:Type="String" x:Ticked="1">Liittyvällä YSO käsitteellä on uusi yläkäsite</Data></Cell>
+    <Cell ss:Index="2" ss:StyleID="s76"><Data ss:Type="String">3.1</Data></Cell>
+    <Cell ss:StyleID="s76" ss:Formula="=COUNTIF(Tulokset!C1,RC[-1])"><Data
+      ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3' and sparqlResults:binding[@name='querySubType']/*[1]='1'])"/></Data></Cell>
+    <Cell ss:StyleID="s76"  ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3' and sparqlResults:binding[@name='querySubType']/*[1]='1'])}-COUNTIF(Tulokset!C1,RC[-2])"><Data ss:Type="Number">0</Data></Cell>
+    <Cell ss:StyleID="s83"><ss:Data ss:Type="String" x:Ticked="1" xmlns="http://www.w3.org/TR/REC-html40"><B>Liittyvällä YSO käsitteellä on uusi yläkäsite</B> <xsl:text disable-output-escaping="yes"><![CDATA[&#10;]]></xsl:text>Toimenpide: Tarkistetaan päteekö erikoisontologian käsitteen ja YSO-käsitteen suhde (ekvivalenssi tai yläkäsitesuhde) myös muutoksen jälkeen. <xsl:text disable-output-escaping="yes"><![CDATA[&#10;]]></xsl:text>* Jos suhde ei enää päde, erikoisontologian käsitteelle on etsittävä uusi yläkäsite tai ekvivalenssi. <xsl:text disable-output-escaping="yes"><![CDATA[&#10;]]></xsl:text>* Jos suhde pätee, muutoksia ei tarvita.</ss:Data></Cell>
    </Row>
    <Row>
-    <Cell ss:Index="2" ss:StyleID="s81"><Data ss:Type="String">3.2</Data></Cell>
-    <Cell ss:StyleID="s81" ss:Formula="=COUNTIF(Tulokset!C[-2],RC[-1])"><Data
-      ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3.2'])"/></Data></Cell>
-    <Cell ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3.2'])}-COUNTIF(Tulokset!C[-3],RC[-2])"><Data ss:Type="Number">0</Data></Cell>
-    <Cell><Data ss:Type="String">Liittyvältä YSO käsitteeltä on poistunut yläkäsite </Data></Cell>
+    <Cell ss:Index="2" ss:StyleID="s76"><Data ss:Type="String">3.2</Data></Cell>
+    <Cell ss:StyleID="s76" ss:Formula="=COUNTIF(Tulokset!C1,RC[-1])"><Data
+      ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3' and sparqlResults:binding[@name='querySubType']/*[1]='2'])"/></Data></Cell>
+    <Cell ss:StyleID="s76"  ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3' and sparqlResults:binding[@name='querySubType']/*[1]='2'])}-COUNTIF(Tulokset!C1,RC[-2])"><Data ss:Type="Number">0</Data></Cell>
+    <Cell ss:StyleID="s83"><ss:Data ss:Type="String" xmlns="http://www.w3.org/TR/REC-html40"><B>Liittyvältä YSO käsitteeltä on poistunut yläkäsite</B> <xsl:text disable-output-escaping="yes"><![CDATA[&#10;]]></xsl:text>Toimenpide: ks. 3.1</ss:Data></Cell>
    </Row>
    <Row>
-    <Cell ss:Index="2" ss:StyleID="s81"><Data ss:Type="String">3.3</Data></Cell>
-    <Cell ss:StyleID="s81" ss:Formula="=COUNTIF(Tulokset!C[-2],RC[-1])"><Data
-      ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3.3'])"/></Data></Cell>
-    <Cell ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3.3'])}-COUNTIF(Tulokset!C[-3],RC[-2])"><Data ss:Type="Number">0</Data></Cell>
-    <Cell><Data ss:Type="String" x:Ticked="1">Liittyvällä YSO käsitteellä on yläkäsite, joka on poistettu käytöstä uudessa YSOssa</Data></Cell>
+    <Cell ss:Index="2" ss:StyleID="s76"><Data ss:Type="String">3.3</Data></Cell>
+    <Cell ss:StyleID="s76" ss:Formula="=COUNTIF(Tulokset!C1,RC[-1])"><Data
+      ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3' and sparqlResults:binding[@name='querySubType']/*[1]='3'])"/></Data></Cell>
+    <Cell ss:StyleID="s76"  ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3' and sparqlResults:binding[@name='querySubType']/*[1]='3'])}-COUNTIF(Tulokset!C1,RC[-2])"><Data ss:Type="Number">0</Data></Cell>
+    <Cell ss:StyleID="s83"><ss:Data ss:Type="String" x:Ticked="1" xmlns="http://www.w3.org/TR/REC-html40"><B>Liittyvällä YSO käsitteellä on yläkäsite, joka on poistettu käytöstä uudessa YSOssa</B> <xsl:text disable-output-escaping="yes"><![CDATA[&#10;]]></xsl:text>Toimenpide: ks. 3.1</ss:Data></Cell>
+   </Row>
+   <Row>
+    <Cell ss:Index="2" ss:StyleID="s76"><Data ss:Type="String">3.4</Data></Cell>
+    <Cell ss:StyleID="s76" ss:Formula="=COUNTIF(Tulokset!C1,RC[-1])"><Data
+      ss:Type="Number"><xsl:value-of select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3' and sparqlResults:binding[@name='querySubType']/*[1]='4'])"/></Data></Cell>
+    <Cell ss:StyleID="s76"  ss:Formula="={count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result[sparqlResults:binding[@name='queryType']/*[1]='3' and sparqlResults:binding[@name='querySubType']/*[1]='4'])}-COUNTIF(Tulokset!C1,RC[-2])"><Data ss:Type="Number">0</Data></Cell>
+    <Cell ss:StyleID="s83"><ss:Data ss:Type="String" x:Ticked="1" xmlns="http://www.w3.org/TR/REC-html40"><B>Liittyvä YSO-käsite on poistettu käytöstä</B> <xsl:text disable-output-escaping="yes"><![CDATA[&#10;]]></xsl:text>Toimenpide: Erikoisontologian käsitteelle on löydettävä uusi yläkäsite tai ekvivalenssi.</ss:Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">

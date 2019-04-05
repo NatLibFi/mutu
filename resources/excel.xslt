@@ -9,7 +9,8 @@
   xmlns:sparqlResults="http://www.w3.org/2005/sparql-results#">
   <xsl:output method="xml"/> 
   
-  <xsl:param name="fintoName">fintoName</xsl:param>
+  <xsl:param name="domainOntUri">http://finto.fi/xxx/</xsl:param>
+  <xsl:param name="newYsoOntUri">http://dev.finto.fi/ysoXXX/</xsl:param>
  
 <xsl:variable name="countRows" select="count(/sparqlResults:sparql/sparqlResults:results/sparqlResults:result)+1"/>
  
@@ -534,7 +535,7 @@
     <Cell><Data ss:Type="Number"><xsl:value-of select="$queryType"/></Data></Cell>
     <Cell><Data ss:Type="Number"><xsl:value-of select="$querySubType"/></Data></Cell>
     <Cell><Data ss:Type="String"><xsl:value-of select="$domainCpref"/></Data></Cell>
-    <Cell ss:HRef="{$domainC}">
+    <Cell ss:HRef="{$domainOntUri}fi/page/?uri={$domainC}">
 	 <Data ss:Type="String"><xsl:value-of select="$domainCShort"/></Data>
 	</Cell>
 	<Cell ss:Formula="=COUNTIF(R2C[-1]:R{$countRows+1}C[-1],RC[-1])"><Data ss:Type="Number"><xsl:value-of select="$countDomainC"/></Data></Cell>
@@ -557,9 +558,9 @@
 	<Cell><Data ss:Type="Number"><xsl:value-of select="$countYsoC"/></Data></Cell>
     <Cell><Data ss:Type="String"><xsl:value-of select="$ysoCtypes"/></Data></Cell>
     <Cell><Data ss:Type="String"><xsl:value-of select="$changeDescription"/></Data></Cell>
-    <Cell ss:HRef="http://finto.fi/{$fintoName}/fi/page/?uri={$ysoC}">
+    <Cell ss:HRef="{$domainOntUri}fi/page/?uri={$ysoC}">
           <Data ss:Type="String"><xsl:if test="$queryType!='1.1'"><xsl:value-of select="$ysoCShort"/></xsl:if></Data></Cell>
-	<Cell ss:HRef="{$ysoC}">
+	<Cell ss:HRef="{$newYsoOntUri}fi/page/?uri={$ysoC}">
      <Data ss:Type="String"><xsl:value-of select="$ysoCShort"/></Data></Cell>
    </Row>
   </xsl:template>

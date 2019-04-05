@@ -126,9 +126,13 @@ public class Mutu {
 	 */
 	private String langStr = "fi";
 	/**
-	 * Short name for the ontology in Finto.fi
+	 * URI for Skosmos installation of the domain ontology
 	 */
-	private String fintoNameStr = "fintoName";
+	private String domainOntUriStr = "http://finto.fi/XXX/";
+	/**
+	 * URI for Skosmos installation of the new YSO ontology
+	 */
+	private String newYsoOntUriStr = "http://dev.finto.fi/ysoXXX/";
 	/**
 	 * List of SPARQL prefixes shared by all MutuQueries. Applied dynamically when
 	 * executing SPARQL.
@@ -409,7 +413,8 @@ public class Mutu {
 		ByteArrayOutputStream xsltOutputStream = new ByteArrayOutputStream();
 		try {
 			Transformer transformer = tFactory.newTransformer(new StreamSource(styleInputStream));
-			transformer.setParameter("fintoName", fintoNameStr);
+			transformer.setParameter("domainOntUri", domainOntUriStr);
+			transformer.setParameter("newYsoOntUri", newYsoOntUriStr);
 			ByteArrayOutputStream xmlResultSetOutputStream = resultSetToOutputStream("xml", resultSet);
 			// InputStream xmlResultInputStream = new InputStream(new
 			// StringReader(xmlResultOutputStream.toString("UTF-8")));
@@ -686,13 +691,23 @@ public class Mutu {
 	}
 
 	/**
-	 * Sets the name of the ontology for finto.fi linking.
+	 * Sets the domain ontology URI for  linking (ie. http://finto.fi/jupo/). Skosmos installation and domain ontology must exist in this URI for the links to work. Links are built using pattern: 'http://finto.fi/jupo/fi/page/?uri=http://www.yso.fi/Fonto/yso/p5296'
+	 * 
+	 * @param fintoNameStr
+	 *            URI for the domain ontology for linking
+	 */
+	public void setDomainOntUri(String domainOntUriStr) {
+		this.domainOntUriStr = domainOntUriStr;
+	}
+	
+	/**
+	 * Sets the new YSO ontology URI for  linking (ie. http://dev.finto.fi/ysocicero/). Skosmos installation and YSO ontoloty must exist in this URI for the links to work.
 	 * 
 	 * @param fintoNameStr
 	 *            short name for the ontology in finto.fi
 	 */
-	public void setFintoName(String fintoNameStr) {
-		this.fintoNameStr = fintoNameStr;
+	public void setNewYsoOntUri(String newYsoOntUriStr) {
+		this.newYsoOntUriStr = newYsoOntUriStr;
 	}
 
 	/**
@@ -795,13 +810,20 @@ public class Mutu {
 		runOptions.addOption(newYsoOpt);
 		allOptions.addOption(newYsoOpt);
 
-		Option fintoNameOpt = Option.builder("fintoName")
-				.desc("Short name for the ontology in Finto.fi (ie. jupo). Used for linking.").hasArg()
+		Option domainOntUriOpt = Option.builder("domainOntUri")
+				.desc("Skosmos URI for the domain ontology (i.e. http://finto.fi/jupo/). Used for linking.").hasArg()
 				// .required()
 				.build();
-		runOptions.addOption(fintoNameOpt);
-		allOptions.addOption(fintoNameOpt);
+		runOptions.addOption(domainOntUriOpt);
+		allOptions.addOption(domainOntUriOpt);
 
+		Option newYsoOntUriOpt = Option.builder("newYsoUri")
+				.desc("Skosmos URI for the new YSO ontology (i.e. http://dev.finto.fi/ysocicero/). Used for linking.").hasArg()
+				// .required()
+				.build();
+		runOptions.addOption(newYsoOntUriOpt);
+		allOptions.addOption(newYsoOntUriOpt);
+		
 		Option langOpt = Option.builder("lang").desc("Label language used for concepts").hasArg().build();
 		runOptions.addOption(langOpt);
 		allOptions.addOption(langOpt);
@@ -864,14 +886,22 @@ public class Mutu {
 			}
 		}
 		
-		if (cmd.hasOption("fintoName")) {
-			setFintoName(cmd.getOptionValue("fintoName"));
+		if (cmd.hasOption("domainOntUri")) {
+			setDomainOntUri(cmd.getOptionValue("domainOntUri"));
 		}else {
-			System.out.println("\n!! fintoName is a required argument\n");
+			System.out.println("\n!! domainOntUri is a required argument\n");
 			formatter.printHelp("mutu", header, allOptions, footer, true);
 			System.exit(-1);
 		}
-
+		
+		if (cmd.hasOption("newYsoUri")) {
+			setNewYsoOntUri(cmd.getOptionValue("newYsoUri"));
+		}else {
+			System.out.println("\n!! newYsoUri is a required argument\n");
+			formatter.printHelp("mutu", header, allOptions, footer, true);
+			System.exit(-1);
+		}
+		
 		// Read files for the special ontology
 		domainOntStrArr = cmd.getOptionValues("domainOnt");
 		if (domainOntStrArr == null) {

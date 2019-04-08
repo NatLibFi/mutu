@@ -691,7 +691,10 @@ public class Mutu {
 	}
 
 	/**
-	 * Sets the domain ontology URI for  linking (ie. http://finto.fi/jupo/). Skosmos installation and domain ontology must exist in this URI for the links to work. Links are built using pattern: 'http://finto.fi/jupo/fi/page/?uri=http://www.yso.fi/Fonto/yso/p5296'
+	 * Sets the domain ontology URI for linking (ie. http://finto.fi/jupo/). Skosmos
+	 * installation and domain ontology must exist in this URI for the links to
+	 * work. Links are built using pattern:
+	 * 'http://finto.fi/jupo/fi/page/?uri=http://www.yso.fi/onto/yso/p5296'
 	 * 
 	 * @param domainOntUriStr
 	 *            URI for the domain ontology for linking
@@ -699,9 +702,11 @@ public class Mutu {
 	public void setDomainOntUri(String domainOntUriStr) {
 		this.domainOntUriStr = domainOntUriStr;
 	}
-	
+
 	/**
-	 * Sets the new YSO ontology URI for  linking (ie. http://dev.finto.fi/ysocicero/). Skosmos installation and YSO ontoloty must exist in this URI for the links to work.
+	 * Sets the new YSO ontology URI for linking (ie.
+	 * http://dev.finto.fi/ysocicero/). Skosmos installation and YSO ontology must
+	 * exist in this URI for the links to work.
 	 * 
 	 * @param newYsoOntUriStr
 	 *            URI for the YSO ontology for linking

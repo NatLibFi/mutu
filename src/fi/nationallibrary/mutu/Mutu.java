@@ -128,11 +128,11 @@ public class Mutu {
 	/**
 	 * URI for Skosmos installation of the domain ontology
 	 */
-	private String domainOntUriStr = "http://finto.fi/XXX/";
+	private String domainOntUriStr = "";
 	/**
 	 * URI for Skosmos installation of the new YSO ontology
 	 */
-	private String newYsoOntUriStr = "http://dev.finto.fi/ysoXXX/";
+	private String newYsoOntUriStr = "";
 	/**
 	 * List of SPARQL prefixes shared by all MutuQueries. Applied dynamically when
 	 * executing SPARQL.

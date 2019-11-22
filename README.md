@@ -19,7 +19,9 @@ result files.
 
 ## Usage:
 
-Download mutu.jar from this page or compile your self. Package is 
+Download mutu.jar from this page or compile your self. 
+
+Package is 
 self contained and has all the necessary dependencies built in. 
 
 

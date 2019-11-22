@@ -5,12 +5,23 @@ to a domain ontology and a newer YSO ontology. Mutu can used as a
 command line tool or directly by other Java programs. For inclusion
 with other Java programs, see the JavaDoc.
 
-Command line tool saves MUTU-results-excel.xml file to the current
-directory. MUTU-results-excel.xml is a Excel 2003 XML formatted
-spreadsheet file that can be opened using MS Excel or LibreOffice Calc.
-Because of the .xml-suffix, the file must be opened using File->Open 
-dialog. It is not possible just to rename it to .xlsx, as Excel will
+Mutu command line tool creates a file named MUTU-results-excel.xml file
+to the current run directory. MUTU-results-excel.xml is a Excel 2003 XML 
+formatted spreadsheet file that can be opened using MS Excel or LibreOffice
+Calc. Because of the .xml-suffix, the file must be opened using File->Open 
+dialog. 
+
+!! It is not possible just to rename the file to .xlsx, as Excel will
 complain of a broken file.
+
+Currently LibreOffice has a performance issue when opening large Mutu 
+result files.
+
+## Usage:
+
+Download mutu.jar from this page. Package is self contained and has
+all the necessary dependencies built in. 
+
 
 ```
     usage: mutu [-debug] [-domainOnt <arg>] [-domainOntUri <arg>] [-help]
@@ -45,3 +56,19 @@ Report YSO changes:
 ```
 java -jar mutu.jar -domainOnt data/maotao.ttl data\yso-maotao.ttl -newYso data\ysoKehitys-Cicero-2019.rdf -domainOntUri http://finto.fi/maotao/ -newYsoUri http://dev.finto.fi/ysocicero/
 ```
+
+## Compiling:
+
+Download Mutu source code from this repository.
+
+Mutu has been developed against Apache Jena 3.7.0 library and depends on
+the same libraries. There are no dependencies outside of Jena 3.7.0.
+
+Download Jena 3.7.0 from:
+http://archive.apache.org/dist/jena/binaries/apache-jena-3.7.0.tar.gz
+
+Extract all Jena libraries to lib/ subfolder. 
+
+Compile using Ant tool and ant-build.xml file. Default build target creates
+mutu.jar file. Mutu is designed to be run from this selfcontained jar file
+and does not work when directly run from source/class files.

@@ -19,8 +19,8 @@ result files.
 
 ## Usage:
 
-Download mutu.jar from this page. Package is self contained and has
-all the necessary dependencies built in. 
+Download mutu.jar from this page or compile your self. Package is 
+self contained and has all the necessary dependencies built in. 
 
 
 ```
@@ -70,5 +70,5 @@ http://archive.apache.org/dist/jena/binaries/apache-jena-3.7.0.tar.gz
 Extract all Jena libraries to lib/ subfolder. 
 
 Compile using Ant tool and ant-build.xml file. Default build target creates
-mutu.jar file. Mutu is designed to be run from this selfcontained jar file
+mutu.jar file. Mutu is designed to be run from this self contained jar file
 and does not work when directly run from source/class files.

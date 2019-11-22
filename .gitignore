@@ -10,6 +10,9 @@
 # Windows command scripts for 'testing'
 .bat
 
+# Windows Thumbs.db
+Thumbs.db
+
 # Test material
 data/
 

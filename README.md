@@ -17,6 +17,11 @@ complain of a broken file.
 Currently LibreOffice has a performance issue when opening large Mutu 
 result files.
 
+Help for interpreting MUTU-results-excel.xml can be found in the support
+website of The National Library of Finland:
+https://www.kiwi.fi/pages/viewpage.action?pageId=108761596
+(In finnish language)
+
 ## Usage:
 
 Download mutu.jar from this page or compile your self. 

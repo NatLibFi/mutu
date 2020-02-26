@@ -88,7 +88,8 @@ SELECT DISTINCT ('1' AS ?queryType) ('1' AS ?querySubType) ?domainC ?nroSubConce
 WHERE {
   GRAPH ?anyNamedGraph {
     {*yso-concept-selector-query*} .
-    FILTER NOT EXISTS {?ysoC owl:deprecated true .} . 
+    FILTER NOT EXISTS {{?ysoC owl:deprecated true . } UNION 
+                       {?ysoC rdf:type  ysometa:DeprecatedConcept , yso-meta:DeprecatedGroupConcept , ysometa:DeprecatedAggregateConcept } } . 
     FILTER NOT EXISTS {?ysoC rdf:type ysometa:Hierarchy .} 
   }
   # Include only YSO Concepts that exists in the old YSO
@@ -117,11 +118,14 @@ WHERE {
     ?ysoC skos:prefLabel ?ysoCnewPref .
     FILTER(lang(?ysoCnewPref) = '*lang*') .
     #FILTER NOT EXISTS {?ysoC skos:prefLabel ?ysoCpref} .
-    FILTER NOT EXISTS {{?ysoC owl:deprecated true} UNION {?ysoC rdf:type ysometa:Hierarchy}} . 
+    FILTER NOT EXISTS {{?ysoC owl:deprecated true . } UNION 
+                       {?ysoC rdf:type  ysometa:DeprecatedConcept , yso-meta:DeprecatedGroupConcept , ysometa:DeprecatedAggregateConcept } UNION 
+					   {?ysoC rdf:type ysometa:Hierarchy}} . 
   }
   {*yso-concept-selector-query*}
   FILTER(?ysoCnewPref != ?ysoCpref) .
-  FILTER NOT EXISTS { GRAPH ?yso {?ysoC owl:deprecated true } } . 
+  FILTER NOT EXISTS { GRAPH ?yso {{?ysoC owl:deprecated true . } UNION 
+                                  {?ysoC rdf:type  ysometa:DeprecatedConcept , yso-meta:DeprecatedGroupConcept , ysometa:DeprecatedAggregateConcept } } } . 
 
   ?domainC skos:prefLabel ?ysoCnewPref
   {*domain-concept-selector-query*}
@@ -159,10 +163,14 @@ WHERE {
     ?ysoC skos:prefLabel ?ysoCnewPref .
     FILTER(lang(?ysoCnewPref) = '*lang*') .
     #FILTER NOT EXISTS {?ysoC skos:prefLabel ?ysoCpref} .
-    FILTER NOT EXISTS {{?ysoC owl:deprecated true} UNION {?ysoC rdf:type ysometa:Hierarchy}} . 
+    FILTER NOT EXISTS {{?ysoC owl:deprecated true . } UNION 
+                       {?ysoC rdf:type  ysometa:DeprecatedConcept , yso-meta:DeprecatedGroupConcept , ysometa:DeprecatedAggregateConcept } UNION 
+					   {?ysoC rdf:type ysometa:Hierarchy}} . 
   }
   FILTER(?ysoCnewPref != ?ysoCpref) .
-  FILTER NOT EXISTS { GRAPH ?yso {?ysoC owl:deprecated true } } . 
+  FILTER NOT EXISTS { GRAPH ?yso {{?ysoC owl:deprecated true . } UNION 
+                                  {?ysoC rdf:type  ysometa:DeprecatedConcept , yso-meta:DeprecatedGroupConcept , ysometa:DeprecatedAggregateConcept }}
+					}. 
 
   OPTIONAL {?domainC ?directRelation ?ysoC} .
   BIND (IF(?ysoCinterface = ?ysoC, "kyllä" ,"ei") AS ?interface)
@@ -223,9 +231,9 @@ WHERE {
   {*yso-concept-selector-query*} .
   
   FILTER NOT EXISTS { GRAPH ?yso { {?ysoC owl:deprecated true . } UNION 
-                                   {?ysoC rdf:type  ysometa:DeprecatedConcept , ysometa:DeprecatedAggregateConcept . } UNION
+                                   {?ysoC rdf:type  ysometa:DeprecatedConcept , yso-meta:DeprecatedGroupConcept , ysometa:DeprecatedAggregateConcept . } UNION
                                    {?ysoC2 owl:deprecated true} UNION
-                                   {?ysoC2 rdf:type  ysometa:DeprecatedConcept , ysometa:DeprecatedAggregateConcept . }
+                                   {?ysoC2 rdf:type  ysometa:DeprecatedConcept , yso-meta:DeprecatedGroupConcept , ysometa:DeprecatedAggregateConcept . }
                                    }}
 
   OPTIONAL {?domainC ?directRelation ?ysoC} .
@@ -274,9 +282,9 @@ WHERE {
   FILTER(lang(?ysoC2pref) = '*lang*')}
   
   FILTER NOT EXISTS { GRAPH ?yso { {?ysoC owl:deprecated true . } UNION 
-                                   {?ysoC rdf:type  ysometa:DeprecatedConcept , ysometa:DeprecatedAggregateConcept . } UNION
+                                   {?ysoC rdf:type  ysometa:DeprecatedConcept , yso-meta:DeprecatedGroupConcept , ysometa:DeprecatedAggregateConcept . } UNION
                                    {?ysoC2 owl:deprecated true} UNION
-                                   {?ysoC2 rdf:type  ysometa:DeprecatedConcept , ysometa:DeprecatedAggregateConcept . }
+                                   {?ysoC2 rdf:type  ysometa:DeprecatedConcept , yso-meta:DeprecatedGroupConcept , ysometa:DeprecatedAggregateConcept . }
                                    }}
   
   OPTIONAL {?domainC ?directRelation ?ysoC} .
@@ -304,7 +312,7 @@ SELECT DISTINCT ?queryType ?querySubType ?domainC ?domainCtypes ?domainCpref ?re
 WHERE {
   {*domain-concept-selector-query*}
   
-  # ?ysoCinterface YSO Concept that is derectly connected to domain ontology (ie. equivalent or direct parent)
+  # ?ysoCinterface YSO Concept that is directly connected to domain ontology (ie. equivalent or direct parent)
   ?domainC rdfs:subClassOf|owl:equivalentClass ?ysoCinterface .
   ?ysoCinterface rdf:type ?ysoCinterfaceType .
   ?ysoCinterfaceType rdfs:subClassOf+ owl:Class .
@@ -319,9 +327,19 @@ WHERE {
                      ?ysoCinterface rdfs:subClassOf ?ysoC} 
   
   GRAPH ?yso { {?ysoC2 rdf:type ysometa:DeprecatedConcept ,
+								yso-meta:DeprecatedGroupConcept ,
                                 ysometa:DeprecatedAggregateConcept .
                 } UNION {
-				?ysoC2 owl:deprecated true} } .
+				?ysoC2 owl:deprecated true}
+			} .
+				
+  # do not report deprecated superordinate consepts for deprecated concepts
+  FILTER(!(?ysoC != ?ysoC2 && EXISTS{   
+		GRAPH ?yso { {?ysoC rdf:type ysometa:DeprecatedConcept ,
+								yso-meta:DeprecatedGroupConcept ,
+                                ysometa:DeprecatedAggregateConcept .} UNION 
+					 {?ysoC owl:deprecated true}
+			} .}))
 				
   #report deprecated concepts only through their superordinate concepts
   #unless the deprecated concept is directly connected

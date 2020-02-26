@@ -13,6 +13,9 @@
 # Windows Thumbs.db
 Thumbs.db
 
+# Binary folder
+bin/
+
 # Test material
 data/
 test/

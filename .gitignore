@@ -15,6 +15,7 @@ Thumbs.db
 
 # Test material
 data/
+test/
 
 # Debugging output files
 debug-files

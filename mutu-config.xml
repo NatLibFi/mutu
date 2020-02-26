@@ -50,7 +50,7 @@ FILTER (lang(?ysoCpref) = '*lang*')
 </replace>
 </task>
 <task>
-<description>Counts the number of domainC subClasses that are not themselves directly connected to YSO and thus not on list on changed concepts.</description>
+<description>Counts the number of domainC subClasses that are not themselves directly connected to the same YSO sub hierachy and thus not on list on changed concepts for the current change.</description>
 <search>*count-domainC-subClasses-as-nroSubConcepts*</search>
 <replace>
 <![CDATA[
@@ -59,10 +59,16 @@ FILTER (lang(?ysoCpref) = '*lang*')
   WHERE{
     ?subConcept rdfs:subClassOf+ ?domainC .
 	FILTER NOT EXISTS {
-	  ?subConcept rdfs:subClassOf|owl:equivalentClass ?someYsoC .
-	  ?someYsoC rdf:type ?someYsoCType .
-      {?someYsoCType rdfs:subClassOf+ owl:Class .
-        FILTER (strstarts(str(?someYsoCType),"http://www.yso.fi/onto/yso")) .}}
+		?subConcept rdfs:subClassOf|owl:equivalentClass ?someYsoC .
+		?someYsoC rdf:type ?someYsoCType .
+		?someYsoCType rdfs:subClassOf+ owl:Class .
+		FILTER (strstarts(str(?someYsoCType),"http://www.yso.fi/onto/yso")) .
+		?domainC rdfs:subClassOf|owl:equivalentClass ?commonYsoC .
+		?commonYsoC rdf:type ?commonYsoCType .
+		?commonYsoCType rdfs:subClassOf+ owl:Class .
+		FILTER (strstarts(str(?commonYsoCType),"http://www.yso.fi/onto/yso")) .
+		?someYsoC rdfs:subClassOf+ ?commonYsoC
+	}
   } GROUP BY ?domainC
   }
 ]]>

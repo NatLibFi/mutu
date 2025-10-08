@@ -7,43 +7,11 @@
 <project basedir="." default="build" name="mutu">
     <property environment="env"/>
     <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="1.8"/>
-    <property name="source" value="1.8"/>
+    <property name="target" value="17"/>
+    <property name="source" value="17"/>
     <path id="mutu.classpath">
-        <pathelement location="bin"/>
-        <pathelement location="lib/jena-core-3.7.0.jar"/>
-        <pathelement location="lib/commons-cli-1.4.jar"/>
-        <pathelement location="lib/slf4j-log4j12-1.7.25.jar"/>
-        <pathelement location="lib/slf4j-api-1.7.25.jar"/>
-        <pathelement location="lib/log4j-1.2.17.jar"/>
-        <pathelement location="lib/xercesImpl-2.11.0.jar"/>
-        <pathelement location="lib/jena-base-3.7.0.jar"/>
-        <pathelement location="lib/jena-arq-3.7.0.jar"/>
-        <pathelement location="lib/jena-cmds-3.7.0.jar"/>
-        <pathelement location="lib/jena-iri-3.7.0.jar"/>
-        <pathelement location="lib/jena-rdfconnection-3.7.0.jar"/>
-        <pathelement location="lib/jena-tdb-3.7.0.jar"/>
-        <pathelement location="lib/jena-shaded-guava-3.7.0.jar"/>
-        <pathelement location="lib/xml-apis-1.4.01.jar"/>
-        <pathelement location="lib/libthrift-0.10.0.jar"/>
-        <pathelement location="lib/httpclient-4.5.3.jar"/>
-        <pathelement location="lib/httpclient-cache-4.5.3.jar"/>
-        <pathelement location="lib/httpcore-4.4.6.jar"/>
-        <pathelement location="lib/jcl-over-slf4j-1.7.25.jar"/>
-        <pathelement location="lib/commons-lang3-3.4.jar"/>
-        <pathelement location="lib/collection-0.7.jar"/>
-        <pathelement location="lib/commons-codec-1.11.jar"/>
-        <pathelement location="lib/commons-csv-1.5.jar"/>
-        <pathelement location="lib/commons-io-2.6.jar"/>
-        <pathelement location="lib/jackson-annotations-2.9.0.jar"/>
-        <pathelement location="lib/jackson-core-2.9.0.jar"/>
-        <pathelement location="lib/jackson-databind-2.9.0.jar"/>
-        <pathelement location="lib/jena-dboe-base-3.7.0.jar"/>
-        <pathelement location="lib/jena-dboe-index-3.7.0.jar"/>
-        <pathelement location="lib/jena-dboe-trans-data-3.7.0.jar"/>
-        <pathelement location="lib/jena-dboe-transaction-3.7.0.jar"/>
-        <pathelement location="lib/jena-tdb2-3.7.0.jar"/>
-        <pathelement location="lib/jsonld-java-0.11.1.jar"/>
+    	<pathelement location="bin/"/>
+    	<fileset dir="lib" includes="**/*.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
@@ -104,47 +72,75 @@
     <!--define folder properties-->
     <property name="dir.buildfile" value="."/>
     <property name="dir.jarfile" value="${dir.buildfile}"/>
+	<property name="jar.excludes" value="META-INF/*.SF, META-INF/services/org.apache.jena.sys.JenaSubsystemLifecycle"/>
     <target name="create_jar">
         <jar destfile="${dir.jarfile}/mutu.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="fi.nationallibrary.mutu.Mutu"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
+            <service type="org.apache.jena.sys.JenaSubsystemLifecycle">
+            	<provider classname="org.apache.jena.riot.system.InitRIOT"/>
+            	<provider classname="org.apache.jena.sparql.system.InitARQ"/>
+            	<provider classname="org.apache.jena.rdfs.sys.InitRDFS"/>
+            	<provider classname="org.apache.jena.cmd.InitCmds"/>
+            	<provider classname="org.apache.jena.sys.InitJenaCore"/>
+            	<provider classname="org.apache.jena.ontapi.sys.InitOntAPI"/>
+            	<provider classname="org.apache.jena.rdfpatch.system.InitPatch"/>
+            	<provider classname="org.apache.jena.shacl.sys.InitShacl"/>
+            	<provider classname="org.apache.jena.shex.sys.InitShex"/>
+            	<provider classname="org.apache.jena.tdb1.sys.InitTDB"/>
+            	<provider classname="org.apache.jena.tdb2.sys.InitTDB2"/>
+            </service>
             <fileset dir="${dir.jarfile}/bin"/>
-            <fileset dir="${dir.jarfile}" includes="resources\, mutu-config.xml"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-core-3.7.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-cli-1.4.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/slf4j-log4j12-1.7.25.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/slf4j-api-1.7.25.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/log4j-1.2.17.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/xercesImpl-2.11.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-base-3.7.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-arq-3.7.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-cmds-3.7.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-iri-3.7.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-rdfconnection-3.7.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-tdb-3.7.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-shaded-guava-3.7.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/xml-apis-1.4.01.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/libthrift-0.10.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/httpclient-4.5.3.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/httpclient-cache-4.5.3.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/httpcore-4.4.6.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jcl-over-slf4j-1.7.25.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-lang3-3.4.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/collection-0.7.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-codec-1.11.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-csv-1.5.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-io-2.6.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jackson-annotations-2.9.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jackson-core-2.9.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jackson-databind-2.9.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-dboe-base-3.7.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-dboe-index-3.7.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-dboe-trans-data-3.7.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-dboe-transaction-3.7.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jena-tdb2-3.7.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jsonld-java-0.11.1.jar"/>
+            <fileset dir="${dir.jarfile}" includes="resources\*.xslt, mutu-config.xml"/>
+        	<!-- cant use exclude with zipgroupfileset-->
+        	<!--<zipgroupfileset dir="lib" includes="*.jar"/>-->
+        	
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/caffeine-3.2.2.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/collection-0.7.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/commons-cli-1.9.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/commons-codec-1.18.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/commons-collections4-4.5.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/commons-compress-1.27.1.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/commons-csv-1.14.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/commons-io-2.19.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/commons-lang3-3.18.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/error_prone_annotations-2.38.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/gson-2.13.1.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jakarta.json-2.0.1.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jcl-over-slf4j-2.0.17.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jena-arq-5.5.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jena-base-5.5.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jena-cmds-5.5.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jena-core-5.5.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jena-dboe-base-5.5.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jena-dboe-index-5.5.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jena-dboe-storage-5.5.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jena-dboe-transaction-5.5.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jena-dboe-trans-data-5.5.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jena-iri3986-5.5.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jena-iri-5.5.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jena-langtag-5.5.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jena-ontapi-5.5.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jena-rdfconnection-5.5.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jena-rdfpatch-5.5.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jena-shacl-5.5.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jena-shex-5.5.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jena-tdb1-5.5.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jena-tdb2-5.5.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/jspecify-1.0.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/libthrift-0.22.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/log4j-api-2.25.1.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/log4j-core-2.25.1.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/log4j-slf4j2-impl-2.25.1.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/protobuf-java-4.31.1.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/RoaringBitmap-1.3.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/slf4j-api-2.0.17.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/titanium-jcs-1.0.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/titanium-json-ld-1.6.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/titanium-rdf-api-1.0.0.jar"/>
+            <zipfileset excludes="${jar.excludes}" src="${dir.jarfile}/lib/titanium-rdf-n-quads-1.0.0.jar"/>
         </jar>
     </target>
 </project>

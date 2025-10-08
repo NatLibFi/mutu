@@ -61,6 +61,10 @@ import org.apache.jena.query.ResultSetFactory;
 import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.query.ResultSetRewindable;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.engine.binding.Binding;
+import org.apache.jena.sparql.exec.ResultSetAdapter;
+import org.apache.jena.sparql.resultset.ResultSetException;
 import org.apache.jena.sparql.resultset.ResultSetMem;
 import org.apache.jena.util.FileManager;
 import org.w3c.dom.Document;
@@ -161,7 +165,8 @@ public class Mutu {
 	 */
 	public static void main(String[] args) {
 		// We don't need to log Jena messages, suppress warning
-		org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.OFF);
+		// Does not work for log4j 2 ,so ignore this for now
+		//org.apache.logging.log4j.LogManager.getRootLogger().setLevel(org.apache.logging.log4j.Level.OFF);
 		Mutu mutu = new Mutu();
 		mutu.parseArguments(args);
 		try {
@@ -438,7 +443,7 @@ public class Mutu {
 	 */
 	private ResultSetRewindable runAllMutuQueries() {
 
-		List<ResultSet> allResults = new ArrayList<ResultSet>();
+		List<ResultSetRewindable> allResults = new ArrayList<ResultSetRewindable>();
 		// First check if there is a specified list of queries to run
 		if (this.queryRunList == null) {
 			for (int i = 0; i < mutuQueryList.size(); i++) {
@@ -459,14 +464,45 @@ public class Mutu {
 				allResults.add(resultSet);
 			}
 		}
+		ResultSetMem joinedResultSetMem = joinResultSetMem((ResultSetRewindable[]) allResults.toArray(new ResultSetRewindable[0]));
 		if (logger.isDebugEnabled()) {
-			writeResultSetToFile("csv", "debug-files/allQueryResults.csv",
-					new ResultSetMem((ResultSet[]) allResults.toArray(new ResultSetMem[0])));
 			writeResultSetToFile("xml", "debug-files/allQueryResults.xml",
-					new ResultSetMem((ResultSet[]) allResults.toArray(new ResultSetMem[0])));
+					joinedResultSetMem);
+			joinedResultSetMem.reset();
+			writeResultSetToFile("csv", "debug-files/allQueryResults.csv",
+					joinedResultSetMem);
+			joinedResultSetMem.reset();
 		}
-		return new ResultSetMem((ResultSet[]) allResults.toArray(new ResultSetMem[0]));
+		return joinedResultSetMem;
 	}
+	
+    /**
+     * Create an in-memory result set from an array of ResulSets. It is assumed
+     * that all the ResultSets from the array have the same variables.
+     * 
+     * @param sets
+     *            the ResultSet objects to concatenate.
+     * @return ResultSetMem object with all the ResultSets joined together
+     */
+
+    public ResultSetMem joinResultSetMem(ResultSet... sets) {
+    	List<Binding> rows = new ArrayList<>();
+    	List<String> varNames = sets[0].getResultVars();
+    	List<Var> varList = Var.varList(varNames);
+
+        for ( ResultSet rs : sets ) {
+        	ResultSetRewindable resultSetRewindable = rs.rewindable();
+            if ( !varNames.equals(rs.getResultVars()) )
+                throw new ResultSetException("ResultSet must have the same variables.");
+            while (resultSetRewindable.hasNext())
+                rows.add(resultSetRewindable.nextBinding());
+            resultSetRewindable.reset();
+            
+        }
+        ResultSetMem resultSetMem = new ResultSetMem(ResultSetAdapter.create(varList, rows.iterator()));
+        resultSetMem.reset();
+        return resultSetMem;
+    }
 
 	/**
 	 * Runs specified Mutu query and returns result (reusable) ResultSetRewindable
@@ -607,7 +643,19 @@ public class Mutu {
 	 *            the format of the ontology, 'RDF/XML' or 'TURTLE'
 	 */
 	public void addDomainOntology(String ontologyAsStr, String lang) {
-		addDomainOntology(new ReaderInputStream(new StringReader(ontologyAsStr), StandardCharsets.UTF_8), lang);
+		ReaderInputStream readerInputStream;
+		try {
+			readerInputStream = ReaderInputStream.builder()
+					   .setCharSequence(ontologyAsStr)
+					   //.setCharsetEncoder(Charset.defaultCharset().newEncoder())
+					   .get();
+		} catch (IOException e) {
+			System.out.println("IO Error reading domain ontology from String!");
+			//e.printStackTrace();
+			return;
+		}
+		
+		addDomainOntology(readerInputStream, lang);
 	}
 
 	/**
@@ -649,7 +697,18 @@ public class Mutu {
 	 *            the format of the ontology, 'RDF/XML' or 'TURTLE'
 	 */
 	public void addNewYsoOntology(String ontologyAsStr, String lang) {
-		addNewYsoOntology(new ReaderInputStream(new StringReader(ontologyAsStr), StandardCharsets.UTF_8), lang);
+		ReaderInputStream readerInputStream;
+		try {
+			readerInputStream = ReaderInputStream.builder()
+					   .setCharSequence(ontologyAsStr)
+					   //.setCharsetEncoder(Charset.defaultCharset().newEncoder())
+					   .get();
+		} catch (IOException e) {
+			System.out.println("IO Error reading domain ontology from String!");
+			//e.printStackTrace();
+			return;
+		}
+		addNewYsoOntology(readerInputStream, lang);
 	}
 
 	/**

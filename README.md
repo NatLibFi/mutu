@@ -22,6 +22,10 @@ website of The National Library of Finland:
 https://www.kiwi.fi/pages/viewpage.action?pageId=108761596
 (In finnish language)
 
+## Requirements
+
+- Java 17
+
 ## Usage:
 
 Download mutu.jar from this page or compile your self. 
@@ -68,11 +72,11 @@ java -jar mutu.jar -domainOnt data/maotao.ttl data\yso-maotao.ttl -newYso data\y
 
 Download Mutu source code from this repository.
 
-Mutu has been developed against Apache Jena 3.7.0 library and depends on
-the same libraries. There are no dependencies outside of Jena 3.7.0.
+Mutu has been developed against Apache Jena 5.5.0 library and depends on
+the same libraries. There are no dependencies outside of Jena 5.5.0.
 
-Download Jena 3.7.0 from:
-http://archive.apache.org/dist/jena/binaries/apache-jena-3.7.0.tar.gz
+Download Jena 5.5.0 from:
+https://archive.apache.org/dist/jena/binaries/apache-jena-5.5.0.zip
 
 Extract all Jena libraries to lib/ subfolder. 
 

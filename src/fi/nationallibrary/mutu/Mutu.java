@@ -16,12 +16,14 @@
 
 package fi.nationallibrary.mutu;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -448,19 +450,11 @@ public class Mutu {
 		if (this.queryRunList == null) {
 			for (int i = 0; i < mutuQueryList.size(); i++) {
 				ResultSetRewindable resultSet = runMutuQuery(i);
-				if (logger.isDebugEnabled()) {
-					writeResultSetToFile("csv", "debug-files/" + (i + 1) + "-queryResult.csv", resultSet);
-					resultSet.reset();
-				}
 				allResults.add(resultSet);
 			}
-		} else { // No specified List - run all queries
+		} else { // queryRunList exists, run only specified queries
 			for (int i : queryRunList) {
 				ResultSetRewindable resultSet = runMutuQuery(i);
-				if (logger.isDebugEnabled()) {
-					writeResultSetToFile("csv", "debug-files/" + (i + 1) + "-queryResult.csv", resultSet);
-					resultSet.reset();
-				}
 				allResults.add(resultSet);
 			}
 		}
@@ -516,11 +510,16 @@ public class Mutu {
 
 		MutuQuery mutuQuery = (MutuQuery) mutuQueryList.get(i);
 		String sparqlQueryStr = commonSparqlPrefixStr + mutuQuery.getQuery();
-		logger.debug("Run SPARQL:\n" + sparqlQueryStr);
+		logger.debug("RUN QUERY: " + i);
 		long startTime = System.currentTimeMillis();
 		ResultSetRewindable resultSet = runSparqlQuery(sparqlQueryStr);
 		long duration = System.currentTimeMillis() - startTime;
 		logger.debug("QUERY DURATION: " + String.format("%.2f", (float) (duration / 1000)) + "s");
+		if (logger.isDebugEnabled()) {
+			writeResultSetToFile("csv", "debug-files/" + (i + 1) + "-queryResult.csv", resultSet);
+			resultSet.reset();
+			writeStringToFile("debug-files/" + (i + 1) + "-query.txt", sparqlQueryStr);
+		}
 		return resultSet;
 	}
 
@@ -576,18 +575,60 @@ public class Mutu {
 		} catch (IOException e) {
 			logger.error("Error writing ResultSet to file: " + outputFile.getAbsolutePath());
 			e.printStackTrace();
+			return;
 		}
 		try {
 			fileOutputStream.close();
 		} catch (IOException e) {
 			logger.error("Error in closing file: " + outputFile.getAbsolutePath());
 			e.printStackTrace();
+			return;
 		}
 		try {
 			outputStream.close();
 		} catch (IOException e) {
 			logger.error("Error in closing file: " + outputFile.getAbsolutePath());
 			e.printStackTrace();
+			return;
+		}
+	}
+	
+	/**
+	 * Writes String to a file.
+	 * 
+	 * @param filePathStr
+	 *            the path indicating where the ByteArrayOutputStream is saved
+	 * @param outputStream
+	 *            the ByteArrayOutputStream to be saved
+	 */
+	private void writeStringToFile(String filePathStr, String stringToWrite) {
+		File outputFile = openFile(filePathStr);
+		FileOutputStream fileOutputStream = null;
+		FileWriter fileWriter = null;
+		BufferedWriter writer = null;
+
+		try {
+			fileWriter = new FileWriter(filePathStr);
+			writer = new BufferedWriter(fileWriter);
+			logger.info("Wrote: " + outputFile.getAbsolutePath());
+		} catch (IOException e) {
+			logger.error("Error writing ResultSet to file: " + outputFile.getAbsolutePath());
+			e.printStackTrace();
+			return;
+		}
+		try {
+			writer.write(stringToWrite);
+		} catch (IOException e) {
+			logger.error("Error in closing file: " + outputFile.getAbsolutePath());
+			e.printStackTrace();
+			return;
+		}
+		try {
+			writer.close();
+		} catch (IOException e) {
+			logger.error("Error in closing file: " + outputFile.getAbsolutePath());
+			e.printStackTrace();
+			return;
 		}
 	}
 

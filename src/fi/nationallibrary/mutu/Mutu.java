@@ -517,7 +517,9 @@ public class Mutu {
 		long startTime = System.currentTimeMillis();
 		ResultSetRewindable resultSet = runSparqlQuery(sparqlQueryStr);
 		long duration = System.currentTimeMillis() - startTime;
+		int nroResults = resultSet.size();
 		logger.debug("QUERY DURATION: " + String.format("%.2f", (float) (duration / 1000)) + "s");
+		logger.debug("RESULTS RETURNED: " + nroResults);
 		if (logger.isDebugEnabled()) {
 			writeResultSetToFile("csv", "debug-files/" + (i + 1) + "-queryResult.csv", resultSet);
 			resultSet.reset();

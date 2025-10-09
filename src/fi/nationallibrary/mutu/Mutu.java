@@ -513,7 +513,10 @@ public class Mutu {
 
 		MutuQuery mutuQuery = (MutuQuery) mutuQueryList.get(i);
 		String sparqlQueryStr = commonSparqlPrefixStr + mutuQuery.getQuery();
+		String sparqlQueryDesc = mutuQuery.getDescription();
+		sparqlQueryDesc = (sparqlQueryDesc == null)? "" : sparqlQueryDesc; 
 		logger.debug("RUN QUERY: " + i);
+		logger.debug("DESCRIPTION: " + sparqlQueryDesc);
 		long startTime = System.currentTimeMillis();
 		ResultSetRewindable resultSet = runSparqlQuery(sparqlQueryStr);
 		long duration = System.currentTimeMillis() - startTime;
@@ -523,7 +526,7 @@ public class Mutu {
 		if (logger.isDebugEnabled()) {
 			writeResultSetToFile("csv", "debug-files/" + (i + 1) + "-queryResult.csv", resultSet);
 			resultSet.reset();
-			writeStringToFile("debug-files/" + (i + 1) + "-query.txt", sparqlQueryStr);
+			writeStringToFile("debug-files/" + (i + 1) + "-query.txt", "# DESCRIPTION: " + sparqlQueryDesc + "\n" + sparqlQueryStr);
 		}
 		return resultSet;
 	}

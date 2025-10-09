@@ -610,9 +610,9 @@ public class Mutu {
 	 * Writes String to a file.
 	 * 
 	 * @param filePathStr
-	 *            the path indicating where the ByteArrayOutputStream is saved
-	 * @param outputStream
-	 *            the ByteArrayOutputStream to be saved
+	 *            the path indicating where the String is saved
+	 * @param stringToWrite
+	 *            the String to be saved
 	 */
 	private void writeStringToFile(String filePathStr, String stringToWrite) {
 		File outputFile = openFile(filePathStr);

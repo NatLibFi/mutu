@@ -35,6 +35,7 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -425,6 +426,10 @@ public class Mutu {
 			Transformer transformer = tFactory.newTransformer(new StreamSource(styleInputStream));
 			transformer.setParameter("domainOntUri", domainOntUriStr);
 			transformer.setParameter("newYsoOntUri", newYsoOntUriStr);
+	        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+	        // Pretty print XML
+	        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+	        transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount","2");
 			ByteArrayOutputStream xmlResultSetOutputStream = resultSetToOutputStream("xml", resultSet);
 			// InputStream xmlResultInputStream = new InputStream(new
 			// StringReader(xmlResultOutputStream.toString("UTF-8")));

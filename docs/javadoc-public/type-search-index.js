@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"fi.nationallibrary.mutu","l":"Mutu"},{"p":"fi.nationallibrary.mutu","l":"MutuLogger"},{"p":"fi.nationallibrary.mutu","l":"MutuQuery"}];updateSearchResults();

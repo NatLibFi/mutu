@@ -322,7 +322,10 @@ public class Mutu {
 						replaceStr = this.langStr;
 					} else {
 						Element replaceElement = getFirstChildElementByName(taskElement, "replace");
-						replaceStr = (replaceElement != null) ? replaceElement.getTextContent() : null;
+						if (replaceElement != null) {
+							replaceStr = "\n# START: " + searchStr + "\n" + replaceElement.getTextContent().trim() + "\n# END: " + searchStr + "\n";
+						} else 
+							replaceStr=null;
 					}
 					if (searchStr != null || searchStr != "" || replaceStr != null || replaceStr != "")
 						sparqlStr = sparqlStr.replace(searchStr, replaceStr);

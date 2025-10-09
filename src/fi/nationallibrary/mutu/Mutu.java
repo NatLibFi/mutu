@@ -83,36 +83,36 @@ import org.xml.sax.SAXException;
  * <P>
  * Mutu is a tool for reporting changes between a new version upper YSO ontology
  * and an older YSO attached to a domain ontology.
- * <P>
+ * </p><P>
  * Mutu can be run independently from a command line (use -help) or it can be
  * used by other Java programs.
- * <P>
+ * </p><P>
  * Main principle of Mutu is to run a set of SPARQL queries defined in a
  * mutu-config.xml file. Configuration is loaded through loadConfig(*) methods.
  * loadConfig() method without arguments tries to load configuration file from
  * the execution directory and then form the root of the jar file. Custom
  * configurations can also be provided directly using loadConfig(*) methods.
- * <P>
+ * </p><P>
  * Mutu Queries in the configuration document must all return exactly the same
  * SPARQL result format so the results can be appended together. This format
  * must also be understood by /resources/excel.xslt XSLT transformation file, to
  * produce the report in Excel 2003 XML format.
- * <P>
+ * </p><P>
  * To work Mutu must be supplied with the domain ontology and attached YSO
  * ontology by using the addDomainOntology(*). Domain ontology can be separated
  * to multiple files and files are loaded by calling addDomainOntology multiple
  * times. A new vesion of the YSO ontology must also be provided and loaded
  * using addNewYsoOntology(*) methods.
- * <P>
+ * </p><P>
  * After the configuration has been successfully loaded with the domain and YSO
  * ontologies, comparison can be run and the results returned by calling
  * getFormattedMutuResuts or getFormattedMutuResutsAsString. These method return
  * the comparison results in an Excel 2003 XML format.
- * <P>
+ * </p><P>
  * Mutu uses Jena and thus depends on the same libraries directly or indirectly.
  * However, Java application that uses Mutu does not need to know anything about
  * Jena or ontologies.
- *
+ * </p>
  */
 public class Mutu {
 

@@ -28,7 +28,7 @@ https://www.kiwi.fi/pages/viewpage.action?pageId=108761596
 
 ## Usage:
 
-Download mutu.jar from this page or compile your self. 
+Download latest mutu.jar release or compile your self. 
 
 Package is 
 self contained and has all the necessary dependencies built in. 

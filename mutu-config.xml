@@ -54,23 +54,23 @@ FILTER (lang(?ysoCpref) = '*lang*')
 <search>*count-domainC-subClasses-as-nroSubConcepts*</search>
 <replace>
 <![CDATA[
-  OPTIONAL{
+OPTIONAL{
   SELECT  ?domainC (COUNT(*) AS ?nroSubConcepts)
   WHERE{
     ?subConcept rdfs:subClassOf+ ?domainC .
-	FILTER NOT EXISTS {
-		?subConcept rdfs:subClassOf|owl:equivalentClass ?someYsoC .
-		?someYsoC rdf:type ?someYsoCType .
-		?someYsoCType rdfs:subClassOf+ owl:Class .
-		FILTER (strstarts(str(?someYsoCType),"http://www.yso.fi/onto/yso")) .
-		?domainC rdfs:subClassOf|owl:equivalentClass ?commonYsoC .
-		?commonYsoC rdf:type ?commonYsoCType .
-		?commonYsoCType rdfs:subClassOf+ owl:Class .
-		FILTER (strstarts(str(?commonYsoCType),"http://www.yso.fi/onto/yso")) .
-		?someYsoC rdfs:subClassOf+ ?commonYsoC
-	}
+    FILTER NOT EXISTS {
+      ?subConcept rdfs:subClassOf|owl:equivalentClass ?someYsoC .
+      ?someYsoC rdf:type ?someYsoCType .
+      ?someYsoCType rdfs:subClassOf+ owl:Class .
+      FILTER (strstarts(str(?someYsoCType),"http://www.yso.fi/onto/yso")) .
+      ?domainC rdfs:subClassOf|owl:equivalentClass ?commonYsoC .
+      ?commonYsoC rdf:type ?commonYsoCType .
+      ?commonYsoCType rdfs:subClassOf+ owl:Class .
+      FILTER (strstarts(str(?commonYsoCType),"http://www.yso.fi/onto/yso")) .
+      ?someYsoC rdfs:subClassOf+ ?commonYsoC
+    }
   } GROUP BY ?domainC
-  }
+}
 ]]>
 </replace>
 </task>
@@ -96,8 +96,8 @@ WHERE {
     {*yso-concept-selector-query*} .
     FILTER NOT EXISTS {{?ysoC owl:deprecated true . } UNION 
                        {?ysoC rdf:type ysometa:StructuringClass} UNION 
-					   {?ysoC rdf:type yso-meta:StructuringClass}  
-					   } . 
+                       {?ysoC rdf:type yso-meta:StructuringClass} 
+                       } . 
     FILTER NOT EXISTS {?ysoC rdf:type ysometa:Hierarchy .} 
   }
   # Include only YSO Concepts that exists in the old YSO
@@ -128,14 +128,14 @@ WHERE {
     #FILTER NOT EXISTS {?ysoC skos:prefLabel ?ysoCpref} .
     FILTER NOT EXISTS {{?ysoC owl:deprecated true . } UNION 
                        {?ysoC rdf:type ysometa:StructuringClass} UNION 
-					   {?ysoC rdf:type yso-meta:StructuringClass} UNION 
-					   {?ysoC rdf:type ysometa:Hierarchy}} . 
+                       {?ysoC rdf:type yso-meta:StructuringClass} UNION 
+                       {?ysoC rdf:type ysometa:Hierarchy}} . 
                     }
   {*yso-concept-selector-query*}
   FILTER(?ysoCnewPref != ?ysoCpref) .
   FILTER NOT EXISTS { GRAPH ?yso {{?ysoC owl:deprecated true . } UNION 
                                   {?ysoC rdf:type ysometa:StructuringClass} UNION 
-								  {?ysoC rdf:type yso-meta:StructuringClass}} . 
+                                  {?ysoC rdf:type yso-meta:StructuringClass}} . 
                     }
   ?domainC skos:prefLabel ?ysoCnewPref
   {*domain-concept-selector-query*}
@@ -175,14 +175,14 @@ WHERE {
     #FILTER NOT EXISTS {?ysoC skos:prefLabel ?ysoCpref} .
     FILTER NOT EXISTS {{?ysoC owl:deprecated true . } UNION 
                        {?ysoC rdf:type ysometa:StructuringClass} UNION
-					   {?ysoC rdf:type yso-meta:StructuringClass}  UNION 
-					   {?ysoC rdf:type ysometa:Hierarchy}} . 
+                       {?ysoC rdf:type yso-meta:StructuringClass}  UNION 
+                       {?ysoC rdf:type ysometa:Hierarchy}} . 
   }
   FILTER(?ysoCnewPref != ?ysoCpref) .
   FILTER NOT EXISTS { GRAPH ?yso {{?ysoC owl:deprecated true . } UNION
                                   {?ysoC rdf:type ysometa:StructuringClass} UNION
-								  {?ysoC rdf:type yso-meta:StructuringClass} }
-					}. 
+                                  {?ysoC rdf:type yso-meta:StructuringClass} }
+                    }. 
 
   OPTIONAL {?domainC ?directRelation ?ysoC} .
   BIND (IF(?ysoCinterface = ?ysoC, "kyllä" ,"ei") AS ?interface)
@@ -237,9 +237,7 @@ WHERE {
   
   FILTER NOT EXISTS { ?ysoCinterface rdfs:subClassOf* ?ysoC .
                       ?ysoC rdfs:subClassOf ?ysoC2 } 
-					  
-					  
-					  
+   
   {*yso-concept-selector-query*} .
   
   # Do not report changes concerning StructuringClasses
@@ -337,15 +335,15 @@ WHERE {
   
   # do not report twice if concept is connected multiple ways, only direct change
   FILTER NOT EXISTS {?domainC rdfs:subClassOf ?ysoC .
-	                 ?domainC owl:equivalentClass ?ysoCinterface .
+                     ?domainC owl:equivalentClass ?ysoCinterface .
                      ?ysoCinterface rdfs:subClassOf ?ysoC} 
   
   GRAPH ?yso { ?ysoC2 owl:deprecated true } .
 				
   # do not report deprecated superordinate consepts for deprecated concepts
   FILTER(!(?ysoC != ?ysoC2 && EXISTS{   
-		GRAPH ?yso { ?ysoC owl:deprecated true} 
-		})) .
+             GRAPH ?yso { ?ysoC owl:deprecated true} 
+         })) .
 				
   #report deprecated concepts only through their superordinate concepts
   #unless the deprecated concept is directly connected
@@ -377,7 +375,6 @@ WHERE {
           concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") käsite on deprekoitu uudessa YSOssa"),
           concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") käsitteellä on yläkäsite '",?ysoC2pref, "' (yso:",substr(str(?ysoC2),28) ,"), joka on deprekoitu uudessa YSOssa")
           ) AS ?changeDescription)
-		  
   
   } 
 }

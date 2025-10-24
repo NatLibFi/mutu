@@ -24,7 +24,7 @@ PREFIX yso-meta: <http://www.yso.fi/onto/yso-meta/2007-03-02/>
 SELECT ?domainC (REPLACE(GROUP_CONCAT(?domainCtype ; separator=", "),'http://([^,]+?)/([^/]+?)-meta/','$2-meta:') AS ?domainCtypes) ?domainCpref
 WHERE {
 ?domainC rdf:type ?domainCtype . 
-?domainCtype rdfs:subClassOf+ owl:Class .
+?domainCtype rdf:type owl:Class .
 FILTER (!strstarts(str(?domainCtype),"http://www.yso.fi/onto/yso") &&
               !strstarts(str(?domainCtype),"http://www.w3.org/2002/07/owl")) .
 ?domainC skos:prefLabel ?domainCpref .
@@ -41,7 +41,7 @@ FILTER (lang(?domainCpref) = '*lang*')
 SELECT ?ysoC (REPLACE(REPLACE(GROUP_CONCAT(?ysoCtype ; separator=", "),'http://([^,]+?)/([^/]+?)-meta/','$2-meta:'),'2007-03-02/','') AS ?ysoCtypes) ?ysoCpref
 WHERE {
 ?ysoC rdf:type ?ysoCtype . 
-?ysoCtype rdfs:subClassOf+ owl:Class .
+?ysoCtype rdf:type owl:Class .
 FILTER (strstarts(str(?ysoCtype),"http://www.yso.fi/onto/yso")) .
 ?ysoC skos:prefLabel ?ysoCpref .
 FILTER (lang(?ysoCpref) = '*lang*')
@@ -57,17 +57,17 @@ FILTER (lang(?ysoCpref) = '*lang*')
 OPTIONAL{
   SELECT  ?domainC (COUNT(*) AS ?nroSubConcepts)
   WHERE{
-    ?subConcept rdfs:subClassOf+ ?domainC .
+    ?subConcept skos:broader+ ?domainC .
     FILTER NOT EXISTS {
-      ?subConcept rdfs:subClassOf|owl:equivalentClass ?someYsoC .
+      ?subConcept skos:broader|skos:exactMatch ?someYsoC .
       ?someYsoC rdf:type ?someYsoCType .
-      ?someYsoCType rdfs:subClassOf+ owl:Class .
+      ?someYsoCType rdf:type owl:Class .
       FILTER (strstarts(str(?someYsoCType),"http://www.yso.fi/onto/yso")) .
-      ?domainC rdfs:subClassOf|owl:equivalentClass ?commonYsoC .
+      ?domainC skos:broader|skos:exactMatch ?commonYsoC .
       ?commonYsoC rdf:type ?commonYsoCType .
-      ?commonYsoCType rdfs:subClassOf+ owl:Class .
+      ?commonYsoCType rdf:type owl:Class .
       FILTER (strstarts(str(?commonYsoCType),"http://www.yso.fi/onto/yso")) .
-      ?someYsoC rdfs:subClassOf+ ?commonYsoC
+      ?someYsoC skos:broader+ ?commonYsoC
     }
   } GROUP BY ?domainC
 }
@@ -96,7 +96,7 @@ WHERE {
     {*yso-concept-selector-query*} .
     FILTER NOT EXISTS {{?ysoC owl:deprecated true . } UNION 
                        {?ysoC rdf:type ysometa:StructuringClass} UNION 
-                       {?ysoC rdf:type yso-meta:StructuringClass} 
+                       {?ysoC rdf:type yso-meta:StructuringClass}  
                        } . 
   }
   # Include only YSO Concepts that exists in the old YSO
@@ -137,7 +137,7 @@ WHERE {
                     }
   ?domainC skos:prefLabel ?ysoCnewPref
   {*domain-concept-selector-query*}
-  FILTER NOT EXISTS { ?domainC owl:equivalentClass ?ysoC } . 
+  FILTER NOT EXISTS { ?domainC skos:exactMatch ?ysoC } . 
   BIND( "" AS ?interface)
   BIND(concat("'",?ysoCpref, "' (yso:",substr(str(?ysoC),28) ,") käsitteen uusi prefLabel on sama kuin erikoisontologian käsitteellä") AS ?changeDescription) .
   
@@ -155,16 +155,16 @@ WHERE {
 SELECT DISTINCT ('2' AS ?queryType) ('2' AS ?querySubType)  ?domainC ?nroSubConcepts ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
 WHERE {
   {*domain-concept-selector-query*}
-  ?domainC rdfs:subClassOf|owl:equivalentClass|owl:equivalentClass/rdfs:subClassOf ?ysoCinterface .
+  ?domainC skos:broader|skos:exactMatch|skos:exactMatch/skos:broader ?ysoCinterface .
   ?ysoCinterface rdf:type ?ysoCinterfaceType .
-  {?ysoCinterfaceType rdfs:subClassOf+ owl:Class .
+  {?ysoCinterfaceType rdf:type owl:Class .
   FILTER (strstarts(str(?ysoCinterfaceType),"http://www.yso.fi/onto/yso")) .}
-  ?ysoCinterface rdfs:subClassOf* ?ysoC .
+  ?ysoCinterface skos:broader* ?ysoC .
   
   # do not report twice if concept is connected multiple ways, only direct change
-  FILTER NOT EXISTS {?domainC rdfs:subClassOf ?ysoC .
-	                 ?domainC owl:equivalentClass ?ysoCinterface .
-                     ?ysoCinterface rdfs:subClassOf ?ysoC}
+  FILTER NOT EXISTS {?domainC skos:broader ?ysoC .
+                     ?domainC skos:exactMatch ?ysoCinterface .
+                     ?ysoCinterface skos:broader ?ysoC}
   
   {*yso-concept-selector-query*} 
   GRAPH ?anyNamedGraph {
@@ -184,12 +184,12 @@ WHERE {
   OPTIONAL {?domainC ?directRelation ?ysoC} .
   BIND (IF(?ysoCinterface = ?ysoC, "kyllä" ,"ei") AS ?interface)
   BIND (IF(?ysoCinterface != ?ysoC, 
-            "rdfs:subClassOf+" ,
-            IF(?directRelation = rdfs:subClassOf ,
-               "rdfs:subClassOf",
-               IF(?directRelation = owl:equivalentClass,
-                  "owl:equivalentClass",
-                  "owl:equivalentClass/rdfs:subClassOf" # Because ysoC is ysoCInterface, but ?directRelation is not rdfs:subClassOf or owl:equivalentClass
+            "skos:broader+" ,
+            IF(?directRelation = skos:broader ,
+               "skos:broader",
+               IF(?directRelation = skos:exactMatch,
+                  "skos:exactMatch",
+                  "skos:exactMatch/skos:broader" # Because ysoC is ysoCInterface, but ?directRelation is not skos:broader or skos:exactMatch
                   )
               )
           ) 
@@ -213,28 +213,28 @@ WHERE{
 SELECT DISTINCT ('3' AS ?queryType) ('1' AS ?querySubType)  ?domainC ?domainCtypes ?domainCpref ?relationType ?interface ?ysoC ?ysoCtypes ?ysoCpref ?changeDescription 
 WHERE {
   {*domain-concept-selector-query*}
-  ?domainC rdfs:subClassOf|owl:equivalentClass ?ysoCinterface .
+  ?domainC skos:broader|skos:exactMatch ?ysoCinterface .
   ?ysoCinterface rdf:type ?ysoCinterfaceType .
-  {?ysoCinterfaceType rdfs:subClassOf+ owl:Class .
+  {?ysoCinterfaceType rdf:type owl:Class .
   FILTER (strstarts(str(?ysoCinterfaceType),"http://www.yso.fi/onto/yso")) .}
   
   GRAPH ?anyNamedGraph {
-    ?ysoCinterface rdfs:subClassOf* ?ysoC .
+    ?ysoCinterface skos:broader* ?ysoC .
     
-    ?ysoC rdfs:subClassOf ?ysoC2 .
+    ?ysoC skos:broader ?ysoC2 .
     ?ysoC2 skos:prefLabel ?ysoC2pref .
     FILTER(lang(?ysoC2pref) = '*lang*')
   }
-  ?ysoCinterface rdfs:subClassOf* ?ysoC .
+  ?ysoCinterface skos:broader* ?ysoC .
   
   # do not report twice if concept is connected multiple ways, only direct change
-  FILTER NOT EXISTS {?domainC rdfs:subClassOf ?ysoC .
-	                 ?domainC owl:equivalentClass ?ysoCinterface .
-                     ?ysoCinterface rdfs:subClassOf ?ysoC} 
+  FILTER NOT EXISTS {?domainC skos:broader ?ysoC .
+	                 ?domainC skos:exactMatch ?ysoCinterface .
+                     ?ysoCinterface skos:broader ?ysoC} 
   
-  FILTER NOT EXISTS { ?ysoCinterface rdfs:subClassOf* ?ysoC .
-                      ?ysoC rdfs:subClassOf ?ysoC2 } 
-   
+  FILTER NOT EXISTS { ?ysoCinterface skos:broader* ?ysoC .
+                      ?ysoC skos:broader ?ysoC2 } 
+  
   {*yso-concept-selector-query*} .
   
   # Do not report changes concerning StructuringClasses
@@ -247,12 +247,12 @@ WHERE {
   OPTIONAL {?domainC ?directRelation ?ysoC} .
   BIND (IF(?ysoCinterface = ?ysoC, "kyllä" ,"ei") AS ?interface)
   BIND (IF(?ysoCinterface != ?ysoC, 
-            "rdfs:subClassOf+" ,
-            IF(?directRelation = rdfs:subClassOf ,
-               "rdfs:subClassOf",
-               IF(?directRelation = owl:equivalentClass,
-                  "owl:equivalentClass",
-                  "owl:equivalentClass/rdfs:subClassOf" # Because ysoC is ysoCInterface, but ?directRelation is not rdfs:subClassOf or owl:equivalentClass
+            "skos:broader+" ,
+            IF(?directRelation = skos:broader ,
+               "skos:broader",
+               IF(?directRelation = skos:exactMatch,
+                  "skos:exactMatch",
+                  "skos:exactMatch/skos:broader" # Because ysoC is ysoCInterface, but ?directRelation is not skos:broader or skos:exactMatch
                   )
               )
           ) 
@@ -269,20 +269,20 @@ WHERE {
   {*domain-concept-selector-query*}
   
   # ?ysoCinterface YSO Concept that is derectly connected to domain ontology (ie. equivalent or direct parent)
-  ?domainC rdfs:subClassOf|owl:equivalentClass ?ysoCinterface .
+  ?domainC skos:broader|skos:exactMatch ?ysoCinterface .
   ?ysoCinterface rdf:type ?ysoCinterfaceType .
-  ?ysoCinterfaceType rdfs:subClassOf+ owl:Class .
+  ?ysoCinterfaceType rdf:type owl:Class .
   FILTER (strstarts(str(?ysoCinterfaceType),"http://www.yso.fi/onto/yso")) .
 
-  {?ysoCinterface rdfs:subClassOf* ?ysoC .
-  ?ysoC rdfs:subClassOf ?ysoC2 .}
+  {?ysoCinterface skos:broader* ?ysoC .
+  ?ysoC skos:broader ?ysoC2 .}
   
   # do not report twice if concept is connected multiple ways, only direct change
-  FILTER NOT EXISTS {?domainC rdfs:subClassOf ?ysoC .
-	                 ?domainC owl:equivalentClass ?ysoCinterface .
-                     ?ysoCinterface rdfs:subClassOf ?ysoC} 
+  FILTER NOT EXISTS {?domainC skos:broader ?ysoC .
+	                 ?domainC skos:exactMatch ?ysoCinterface .
+                     ?ysoCinterface skos:broader ?ysoC} 
   
-  FILTER NOT EXISTS { GRAPH ?yso { ?ysoC rdfs:subClassOf ?ysoC2 } }
+  FILTER NOT EXISTS { GRAPH ?yso { ?ysoC skos:broader ?ysoC2 } }
   
   {*yso-concept-selector-query*} 
   
@@ -299,12 +299,12 @@ WHERE {
   OPTIONAL {?domainC ?directRelation ?ysoC} .
   BIND (IF(?ysoCinterface = ?ysoC, "kyllä" ,"ei") AS ?interface)
   BIND (IF(?ysoCinterface != ?ysoC, 
-            "rdfs:subClassOf+" ,
-            IF(?directRelation = rdfs:subClassOf ,
-               "rdfs:subClassOf",
-               IF(?directRelation = owl:equivalentClass,
-                  "owl:equivalentClass",
-                  "owl:equivalentClass/rdfs:subClassOf" # Because ysoC is ysoCInterface, but ?directRelation is not rdfs:subClassOf or owl:equivalentClass
+            "skos:broader+" ,
+            IF(?directRelation = skos:broader ,
+               "skos:broader",
+               IF(?directRelation = skos:exactMatch,
+                  "skos:exactMatch",
+                  "skos:exactMatch/skos:broader" # Because ysoC is ysoCInterface, but ?directRelation is not skos:broader or skos:exactMatch
                   )
               )
           ) 
@@ -322,18 +322,18 @@ WHERE {
   {*domain-concept-selector-query*}
   
   # ?ysoCinterface YSO Concept that is directly connected to domain ontology (ie. equivalent or direct parent)
-  ?domainC rdfs:subClassOf|owl:equivalentClass ?ysoCinterface .
+  ?domainC skos:broader|skos:exactMatch ?ysoCinterface .
   ?ysoCinterface rdf:type ?ysoCinterfaceType .
-  ?ysoCinterfaceType rdfs:subClassOf+ owl:Class .
+  ?ysoCinterfaceType rdf:type owl:Class .
   FILTER (strstarts(str(?ysoCinterfaceType),"http://www.yso.fi/onto/yso")) .
 
-  {?ysoCinterface rdfs:subClassOf* ?ysoC .
-  ?ysoC rdfs:subClassOf? ?ysoC2 .} .
+  {?ysoCinterface skos:broader* ?ysoC .
+  ?ysoC skos:broader? ?ysoC2 .} .
   
   # do not report twice if concept is connected multiple ways, only direct change
-  FILTER NOT EXISTS {?domainC rdfs:subClassOf ?ysoC .
-                     ?domainC owl:equivalentClass ?ysoCinterface .
-                     ?ysoCinterface rdfs:subClassOf ?ysoC} 
+  FILTER NOT EXISTS {?domainC skos:broader ?ysoC .
+                     ?domainC skos:exactMatch ?ysoCinterface .
+                     ?ysoCinterface skos:broader ?ysoC} 
   
   GRAPH ?yso { ?ysoC2 owl:deprecated true } .
 				
@@ -355,12 +355,12 @@ WHERE {
   OPTIONAL {?domainC ?directRelation ?ysoC} .
   BIND (IF(?ysoCinterface = ?ysoC, "kyllä" ,"ei") AS ?interface)
   BIND (IF(?ysoCinterface != ?ysoC, 
-            "rdfs:subClassOf+" ,
-            IF(?directRelation = rdfs:subClassOf ,
-               "rdfs:subClassOf",
-               IF(?directRelation = owl:equivalentClass,
-                  "owl:equivalentClass",
-                  "owl:equivalentClass/rdfs:subClassOf" # Because ysoC is ysoCInterface, but ?directRelation is not rdfs:subClassOf or owl:equivalentClass
+            "skos:broader+" ,
+            IF(?directRelation = skos:broader ,
+               "skos:broader",
+               IF(?directRelation = skos:exactMatch,
+                  "skos:exactMatch",
+                  "skos:exactMatch/skos:broader" # Because ysoC is ysoCInterface, but ?directRelation is not skos:broader or skos:exactMatch
                   )
               )
           ) 

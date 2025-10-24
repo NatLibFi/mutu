@@ -98,7 +98,6 @@ WHERE {
                        {?ysoC rdf:type ysometa:StructuringClass} UNION 
                        {?ysoC rdf:type yso-meta:StructuringClass} 
                        } . 
-    FILTER NOT EXISTS {?ysoC rdf:type ysometa:Hierarchy .} 
   }
   # Include only YSO Concepts that exists in the old YSO
   FILTER NOT EXISTS { ?ysoC rdf:type ?anyTypeX } .
@@ -128,8 +127,7 @@ WHERE {
     #FILTER NOT EXISTS {?ysoC skos:prefLabel ?ysoCpref} .
     FILTER NOT EXISTS {{?ysoC owl:deprecated true . } UNION 
                        {?ysoC rdf:type ysometa:StructuringClass} UNION 
-                       {?ysoC rdf:type yso-meta:StructuringClass} UNION 
-                       {?ysoC rdf:type ysometa:Hierarchy}} . 
+                       {?ysoC rdf:type yso-meta:StructuringClass} } . 
                     }
   {*yso-concept-selector-query*}
   FILTER(?ysoCnewPref != ?ysoCpref) .
@@ -175,8 +173,7 @@ WHERE {
     #FILTER NOT EXISTS {?ysoC skos:prefLabel ?ysoCpref} .
     FILTER NOT EXISTS {{?ysoC owl:deprecated true . } UNION 
                        {?ysoC rdf:type ysometa:StructuringClass} UNION
-                       {?ysoC rdf:type yso-meta:StructuringClass}  UNION 
-                       {?ysoC rdf:type ysometa:Hierarchy}} . 
+                       {?ysoC rdf:type yso-meta:StructuringClass} } . 
   }
   FILTER(?ysoCnewPref != ?ysoCpref) .
   FILTER NOT EXISTS { GRAPH ?yso {{?ysoC owl:deprecated true . } UNION
